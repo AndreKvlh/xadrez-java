@@ -1,6 +1,8 @@
 package com.xadrez.project.xadrez_java;
 
 import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
+import com.xadrez.project.xadrez_java.peca.Peca;
+import com.xadrez.project.xadrez_java.jogador.Jogador;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -19,9 +21,12 @@ public class App extends Application
     }
 
     public static void main(String[] args) {
-    	Tabuleiro tabuleiro = new Tabuleiro();
-    	String posicao = tabuleiro.coordEmPosicao(2,2);
-    	System.out.println(posicao);
+    		Tabuleiro tabuleiro = new Tabuleiro();
+    		Jogador jogador1 = new Jogador(0);
+    		Jogador jogador2 = new Jogador(1);
+    		jogador1.definirPecas(tabuleiro);
+    		jogador2.definirPecas(tabuleiro);
+    		tabuleiro.gerarTabuleiro();
         launch();
     }
 }

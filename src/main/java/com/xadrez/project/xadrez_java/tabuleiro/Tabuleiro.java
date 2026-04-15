@@ -1,5 +1,7 @@
 package com.xadrez.project.xadrez_java.tabuleiro;
 
+import com.xadrez.project.xadrez_java.peca.Peca;
+
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -27,25 +29,47 @@ public class Tabuleiro {
 	
 	//Função para converter uma coordenada em posição;
 	public String coordEmPosicao(int c, int l) {
-		String posicao = String.format("%c%c",colunas[c],linhas[l]);
+		String posicao = String.format("%c%c",this.colunas[c],this.linhas[l]);
 		return posicao;
 	}
 	
 	//Função para converter uma posição em coordenada;
-	public String posicaoEmCoord(String pos) {
-		int coluna = this.acharPos(colunas, pos.charAt(0));
-		int linha = this.acharPos(linhas, pos.charAt(1));
-		return String.format("[%d,%d]",coluna,linha);
+	public int[] posicaoEmCoord(String pos) {
+		int coluna = this.acharCoord(this.colunas, pos.charAt(0));
+		int linha = this.acharCoord(this.linhas, pos.charAt(1));
+		int[] coord = {coluna, linha};
+		return coord;
 	}
 	
 	//Função feita para fazer uma binary search mesmo com
 	//o array em ordem decrescente
-	private int acharPos(char[] seq ,char c) {
-		int cont = 0;
-		for (int i = seq.length - 1; i >= 0; i--) {
-			if (seq[i] == c) return cont;
-			cont++;
+	private int acharCoord(char[] seq ,char c) {
+		for (int i = 0; i < seq.length; i++) {
+			if (seq[i] == c) return i;
 		}
 		return -1;
+	}
+	
+	//Coloca a peça na posição designada
+	public void colocarPeca(Peca p, String pos) {
+		int[] coord = this.posicaoEmCoord(pos);
+		pecasNoTabuleiro[coord[1]][coord[0]] = p.getRepresentacao();
+	}
+	
+	//Gerar o tabuleiro no console
+	public void gerarTabuleiro() {
+		for (int linha = 0; linha < 8; linha++) {
+			System.out.println("-----------------");
+			for (int coluna = 0; coluna < 8; coluna++) {
+				System.out.print("|");
+				if (this.pecasNoTabuleiro[linha][coluna] == '\u0000') {
+					System.out.print(" ");
+					continue;
+				}
+				System.out.print(pecasNoTabuleiro[linha][coluna]);
+			}
+			System.out.println("|");
+		}
+		System.out.println("-----------------");
 	}
 }
