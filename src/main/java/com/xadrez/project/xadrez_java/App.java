@@ -24,9 +24,10 @@ public class App extends Application
     		Tabuleiro tabuleiro = new Tabuleiro();
     		Jogador jogador1 = new Jogador(0);
     		Jogador jogador2 = new Jogador(1);
-    		jogador1.definirPecas(tabuleiro);
-    		jogador2.definirPecas(tabuleiro);
+    		jogador1.posInicialPecas(tabuleiro);
+    		jogador2.posInicialPecas(tabuleiro);
     		tabuleiro.gerarTabuleiro();
+    		jogador1.getPecasAtuais().get(14).calcularPossibilidades(tabuleiro);
         launch();
     }
 }

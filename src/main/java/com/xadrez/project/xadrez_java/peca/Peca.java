@@ -11,6 +11,9 @@ public class Peca {
 	//Atributo que armazena a string da posição da peça no tabuleiro atualmente
 	private String posicao;
 	
+	//Atributo que armazena quem é o jogador responsável pela peça;
+	private int jogadorResp;
+	
 	//Atributo que informa se essa peça saiu da posição inicial
 	private boolean posInicial;
 	
@@ -19,18 +22,19 @@ public class Peca {
 	private ArrayList<String> posDeMovimento = new ArrayList<>();
 	
 	//Variável que coordena para quantas direções a peça pode andar
-	private int numDirecoes;
+	protected int[][] direcoes;
 	
 	//Variável que delimita o número de casas que a peça pode andar. Zero representa não
 	//ter limite
 	private int limMovimento;
 	
 	//Construtor
-	public Peca(char representacao, String posicao) {
+	public Peca(char representacao, String posicao, int jogadorResp) {
 		super();
 		this.representacao = representacao;
 		this.posicao = posicao;
 		this.posInicial = true;
+		this.jogadorResp = jogadorResp;
 	}
 	
 	//Método que calcula o movimento das peças e adiciona ao ArrayList
@@ -55,14 +59,6 @@ public class Peca {
 		this.posInicial = posInicial;
 	}
 
-	public int getNumDirecoes() {
-		return numDirecoes;
-	}
-
-	public void setNumDirecoes(int numDirecoes) {
-		this.numDirecoes = numDirecoes;
-	}
-
 	public int getLimMovimento() {
 		return limMovimento;
 	}
@@ -77,5 +73,13 @@ public class Peca {
 
 	public void setRepresentacao(char representacao) {
 		this.representacao = representacao;
+	}
+	
+	public int getJogadorResp() {
+		return jogadorResp;
+	}
+	
+	public ArrayList<String> getPosDeMovimento() {
+		return posDeMovimento;
 	}
 }

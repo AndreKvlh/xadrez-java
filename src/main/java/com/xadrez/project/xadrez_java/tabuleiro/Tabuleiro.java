@@ -7,7 +7,7 @@ import java.util.Collections;
 
 public class Tabuleiro {
 	//Matriz de controle das peças e movimentos;
-	private char[][] pecasNoTabuleiro = new char[8][8];
+	private Peca[][] pecasNoTabuleiro = new Peca[8][8];
 	
 	//Matriz de controle da cor das casas;
 	private int[][] coresDasCasas = {
@@ -53,7 +53,7 @@ public class Tabuleiro {
 	//Coloca a peça na posição designada
 	public void colocarPeca(Peca p, String pos) {
 		int[] coord = this.posicaoEmCoord(pos);
-		pecasNoTabuleiro[coord[1]][coord[0]] = p.getRepresentacao();
+		pecasNoTabuleiro[coord[1]][coord[0]] = p;
 	}
 	
 	//Gerar o tabuleiro no console
@@ -62,14 +62,19 @@ public class Tabuleiro {
 			System.out.println("-----------------");
 			for (int coluna = 0; coluna < 8; coluna++) {
 				System.out.print("|");
-				if (this.pecasNoTabuleiro[linha][coluna] == '\u0000') {
+				if (this.pecasNoTabuleiro[linha][coluna] == null) {
 					System.out.print(" ");
 					continue;
 				}
-				System.out.print(pecasNoTabuleiro[linha][coluna]);
+				System.out.print(pecasNoTabuleiro[linha][coluna].getRepresentacao());
 			}
 			System.out.println("|");
 		}
 		System.out.println("-----------------");
+	}
+	
+	//Obter informação da peça que está em uma posição específica
+	public Peca getPecaNoTabuleiro (int linha, int coluna) {
+		return this.pecasNoTabuleiro[coluna][linha];
 	}
 }

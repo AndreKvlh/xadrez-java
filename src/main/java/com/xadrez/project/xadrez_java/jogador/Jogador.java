@@ -31,7 +31,7 @@ public class Jogador {
 	}
 	
 	//Método que define quais são as peças e suas posições
-	public void definirPecas(Tabuleiro tabuleiro) {
+	/*public void definirPecas(Tabuleiro tabuleiro) {
 		if (jogador == 0) {
 			for (int linha = 6; linha < 8; linha++) {
 				for (int coluna = 0; coluna < 8; coluna++) {
@@ -106,6 +106,38 @@ public class Jogador {
 						tabuleiro.colocarPeca(rainha, rainha.getPosicao());
 				}
 			}
+		}
+	}*/
+	
+	//Método para inserir peças na posição inicial do tabuleiro (versão clean do
+	//método acima
+	public void posInicialPecas(Tabuleiro tabuleiro) {
+		//Variáveis que irão ser alteradas conforme o jogador que as chama
+		int linhaPeoes = this.jogador == 0 ? 6 : 1;
+		int linhaPecas = this.jogador == 0 ? 7 : 0;
+		char[] pecasJogador = this.jogador == 0 ? this.pecasBrancas : this.pecasPretas;
+		
+		//Variável que abriga os objetos criados das peças
+		Peca peca = null;
+		
+		//Inserindo peões nas suas respectivas linhas
+		for (int col = 0; col < 8; col++) {
+			peca = new Peao(pecasJogador[0], tabuleiro.coordEmPosicao(col, linhaPeoes), getJogador());
+			pecasAtuais.add(peca);
+			tabuleiro.colocarPeca(peca, peca.getPosicao());
+		}
+		
+		//Inserindo as demais peças
+		for (int col = 0; col < 8; col++) {
+			peca = switch(col) {
+				case 0, 7 -> new Torre(pecasJogador[1], tabuleiro.coordEmPosicao(col, linhaPecas), getJogador());
+				case 1, 6 -> new Cavalo(pecasJogador[2], tabuleiro.coordEmPosicao(col, linhaPecas), getJogador());
+				case 2, 5 -> new Bispo(pecasJogador[3], tabuleiro.coordEmPosicao(col, linhaPecas), getJogador());
+				case 3 -> new Rei(pecasJogador[4], tabuleiro.coordEmPosicao(col, linhaPecas), getJogador());
+				default -> new Rainha(pecasJogador[5], tabuleiro.coordEmPosicao(col, linhaPecas), getJogador());
+			};
+			pecasAtuais.add(peca);
+			tabuleiro.colocarPeca(peca, peca.getPosicao());
 		}
 	}
 
