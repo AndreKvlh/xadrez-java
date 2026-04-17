@@ -1,6 +1,7 @@
 package com.xadrez.project.xadrez_java.peca;
 
 import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
+import com.xadrez.project.xadrez_java.jogador.Jogador;
 
 import java.util.ArrayList;
 
@@ -12,7 +13,7 @@ public class Peca {
 	private String posicao;
 	
 	//Atributo que armazena quem é o jogador responsável pela peça;
-	private int jogadorResp;
+	private Jogador jogadorResp;
 	
 	//Atributo que informa se essa peça saiu da posição inicial
 	private boolean posInicial;
@@ -29,7 +30,7 @@ public class Peca {
 	private int limMovimento;
 	
 	//Construtor
-	public Peca(char representacao, String posicao, int jogadorResp) {
+	public Peca(char representacao, String posicao, Jogador jogadorResp) {
 		super();
 		this.representacao = representacao;
 		this.posicao = posicao;
@@ -75,7 +76,7 @@ public class Peca {
 		this.representacao = representacao;
 	}
 	
-	public int getJogadorResp() {
+	public Jogador getJogadorResp() {
 		return jogadorResp;
 	}
 	

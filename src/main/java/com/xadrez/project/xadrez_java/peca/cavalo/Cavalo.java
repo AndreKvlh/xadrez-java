@@ -2,15 +2,18 @@ package com.xadrez.project.xadrez_java.peca.cavalo;
 
 import com.xadrez.project.xadrez_java.peca.Peca;
 import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
+import com.xadrez.project.xadrez_java.jogador.Jogador;
 
 public class Cavalo extends Peca {
-	public Cavalo(char representacao, String posicao, int jogadorResp) {
+	public Cavalo(char representacao, String posicao, Jogador jogadorResp) {
 		super(representacao, posicao, jogadorResp);
 		this.direcoes = new int[][]{{-1,-2},{1,-2},{2,-1},{2,1},{1,2},{-1,2},{-2,1},{-2,-1}};
 	}
 	
+	//Sobreposição do método que calcula as possibilidades de movimento
 	@Override
 	public void calcularPossibilidades(Tabuleiro tabuleiro) {
+		if(!getPosDeMovimento().isEmpty()) getPosDeMovimento().clear();
 		int[] coord = tabuleiro.posicaoEmCoord(getPosicao());
 		for(int[] direcoes : this.direcoes) {
 			int[] novaPos = {coord[0] + direcoes[0], coord[1] + direcoes[1]};

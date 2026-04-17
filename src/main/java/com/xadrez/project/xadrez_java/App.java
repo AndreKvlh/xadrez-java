@@ -3,12 +3,15 @@ package com.xadrez.project.xadrez_java;
 import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
 import com.xadrez.project.xadrez_java.peca.Peca;
 import com.xadrez.project.xadrez_java.jogador.Jogador;
+import com.xadrez.project.xadrez_java.computador.Computador;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+
+import java.util.Scanner;
 
 public class App extends Application
 {	
@@ -21,13 +24,22 @@ public class App extends Application
     }
 
     public static void main(String[] args) {
+    		Scanner leitor = new Scanner(System.in);
     		Tabuleiro tabuleiro = new Tabuleiro();
+    		Computador computador = new Computador();
     		Jogador jogador1 = new Jogador(0);
     		Jogador jogador2 = new Jogador(1);
     		jogador1.posInicialPecas(tabuleiro);
     		jogador2.posInicialPecas(tabuleiro);
     		tabuleiro.gerarTabuleiro();
-    		jogador1.getPecasAtuais().get(14).calcularPossibilidades(tabuleiro);
+    		char opcao;
+    		do {
+    			jogador1.realizarJogada(tabuleiro, leitor);
+    			jogador2.realizarJogada(tabuleiro, computador);
+    			tabuleiro.gerarTabuleiro();
+    			System.out.println("Você deseja continuar? (s/n)");
+    			opcao = leitor.next().charAt(0);
+    		} while (opcao != 'n');
         launch();
     }
 }

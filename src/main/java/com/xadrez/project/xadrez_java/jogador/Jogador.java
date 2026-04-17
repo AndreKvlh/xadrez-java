@@ -1,15 +1,17 @@
 package com.xadrez.project.xadrez_java.jogador;
 
+import java.util.ArrayList;
+import java.util.Scanner;
+
 import com.xadrez.project.xadrez_java.peca.Peca;
-import com.xadrez.project.xadrez_java.peca.peao.Peao;
 import com.xadrez.project.xadrez_java.peca.bispo.Bispo;
 import com.xadrez.project.xadrez_java.peca.cavalo.Cavalo;
-import com.xadrez.project.xadrez_java.peca.torre.Torre;
+import com.xadrez.project.xadrez_java.peca.peao.Peao;
 import com.xadrez.project.xadrez_java.peca.rainha.Rainha;
 import com.xadrez.project.xadrez_java.peca.rei.Rei;
+import com.xadrez.project.xadrez_java.peca.torre.Torre;
 import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
-
-import java.util.ArrayList;
+import com.xadrez.project.xadrez_java.computador.Computador;
 
 public class Jogador {
 	//Define as peças de cada cor, diferenciadas pelo fato de serem
@@ -122,7 +124,7 @@ public class Jogador {
 		
 		//Inserindo peões nas suas respectivas linhas
 		for (int col = 0; col < 8; col++) {
-			peca = new Peao(pecasJogador[0], tabuleiro.coordEmPosicao(col, linhaPeoes), getJogador());
+			peca = new Peao(pecasJogador[0], tabuleiro.coordEmPosicao(col, linhaPeoes), this);
 			pecasAtuais.add(peca);
 			tabuleiro.colocarPeca(peca, peca.getPosicao());
 		}
@@ -130,17 +132,74 @@ public class Jogador {
 		//Inserindo as demais peças
 		for (int col = 0; col < 8; col++) {
 			peca = switch(col) {
-				case 0, 7 -> new Torre(pecasJogador[1], tabuleiro.coordEmPosicao(col, linhaPecas), getJogador());
-				case 1, 6 -> new Cavalo(pecasJogador[2], tabuleiro.coordEmPosicao(col, linhaPecas), getJogador());
-				case 2, 5 -> new Bispo(pecasJogador[3], tabuleiro.coordEmPosicao(col, linhaPecas), getJogador());
-				case 3 -> new Rei(pecasJogador[4], tabuleiro.coordEmPosicao(col, linhaPecas), getJogador());
-				default -> new Rainha(pecasJogador[5], tabuleiro.coordEmPosicao(col, linhaPecas), getJogador());
+				case 0, 7 -> new Torre(pecasJogador[1], tabuleiro.coordEmPosicao(col, linhaPecas), this);
+				case 1, 6 -> new Cavalo(pecasJogador[2], tabuleiro.coordEmPosicao(col, linhaPecas), this);
+				case 2, 5 -> new Bispo(pecasJogador[3], tabuleiro.coordEmPosicao(col, linhaPecas), this);
+				case 3 -> new Rei(pecasJogador[4], tabuleiro.coordEmPosicao(col, linhaPecas), this);
+				default -> new Rainha(pecasJogador[5], tabuleiro.coordEmPosicao(col, linhaPecas), this);
 			};
 			pecasAtuais.add(peca);
 			tabuleiro.colocarPeca(peca, peca.getPosicao());
 		}
 	}
 
+	//Método que checa a jogada e sendo ela válida fará ela acontecer
+	public void realizarJogada(Tabuleiro tabuleiro, Scanner leitor) {
+		do {
+			System.out.print("Digite a posição referente a peça que você quer selecionar: ");
+			String posPeca = leitor.next();
+			int[] coordPeca = tabuleiro.posicaoEmCoord(posPeca);
+			Peca pecaSelecionada = null;
+			try {
+				pecaSelecionada = tabuleiro.getPecaNoTabuleiro(coordPeca[0],coordPeca[1]);
+			} catch (ArrayIndexOutOfBoundsException e) {
+				System.out.println("Posição inválida! Tente novamente");
+				continue;
+			}
+			if(pecaSelecionada == null) {
+				System.out.println("Casa vazia! Tente novamente");
+				continue;
+			}
+			if(!getPecasAtuais().contains(pecaSelecionada)) {
+				System.out.println("Essa não é a sua peça! Tente novamente");
+				continue;
+			}
+			pecaSelecionada.calcularPossibilidades(tabuleiro);
+			System.out.println();
+			System.out.print("Digite a posição na qual você quer mover a peça: ");
+			String novaPos = leitor.next();
+			if(!pecaSelecionada.getPosDeMovimento().contains(novaPos)) {
+				System.out.println("Movimento inválido! Tente novamente");
+				continue;
+			}
+			int[] coordNova = tabuleiro.posicaoEmCoord(novaPos);
+			Peca conteudoPos = tabuleiro.getPecaNoTabuleiro(coordNova[0], coordNova[1]);
+			if(conteudoPos != null) {
+				tabuleiro.executarCaptura(pecaSelecionada, conteudoPos);
+			}
+			tabuleiro.colocarPeca(pecaSelecionada, novaPos);
+			tabuleiro.colocarPeca(null, posPeca);
+			pecaSelecionada.setPosicao(novaPos);
+			return;
+		} while (true);
+	}
+	
+	//Método sobrecarregado para caso haja um controle do computador
+	public void realizarJogada(Tabuleiro tabuleiro, Computador computador) {
+		String posPeca = computador.selecionarPeca(this.getPecasAtuais(), tabuleiro);
+		int[] coordPeca = tabuleiro.posicaoEmCoord(posPeca);
+		Peca pecaSelecionada = tabuleiro.getPecaNoTabuleiro(coordPeca[0], coordPeca[1]);
+		String novaPos = computador.moverPeca(pecaSelecionada,tabuleiro);
+		int[] coordNova = tabuleiro.posicaoEmCoord(novaPos);
+		Peca conteudoPos = tabuleiro.getPecaNoTabuleiro(coordNova[0], coordNova[1]);
+		if(conteudoPos != null) {
+			tabuleiro.executarCaptura(pecaSelecionada, conteudoPos);
+		}
+		tabuleiro.colocarPeca(pecaSelecionada, novaPos);
+		tabuleiro.colocarPeca(null, posPeca);
+		pecaSelecionada.setPosicao(novaPos);
+	}
+	
 	public int getJogador() {
 		return jogador;
 	}
@@ -155,5 +214,9 @@ public class Jogador {
 
 	public void setPecasAtuais(ArrayList<Peca> pecasAtuais) {
 		this.pecasAtuais = pecasAtuais;
+	}
+	
+	public ArrayList<Peca> getPecasCapturadas() {
+		return pecasCapturadas;
 	}
 }

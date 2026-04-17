@@ -1,6 +1,7 @@
 package com.xadrez.project.xadrez_java.tabuleiro;
 
 import com.xadrez.project.xadrez_java.peca.Peca;
+import com.xadrez.project.xadrez_java.jogador.Jogador;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -76,5 +77,16 @@ public class Tabuleiro {
 	//Obter informação da peça que está em uma posição específica
 	public Peca getPecaNoTabuleiro (int linha, int coluna) {
 		return this.pecasNoTabuleiro[coluna][linha];
+	}
+	
+	//Método para executar a captura de peças
+	public void executarCaptura (Peca pecaJogador, Peca pecaAdv) {
+		Jogador jogadorAtual = pecaJogador.getJogadorResp();
+		Jogador jogadorAdv = pecaAdv.getJogadorResp();
+		
+		jogadorAdv.getPecasAtuais().remove(pecaAdv);
+		jogadorAtual.getPecasCapturadas().add(pecaAdv);
+		System.out.println(jogadorAdv.getPecasAtuais().size());
+		System.out.println(jogadorAtual.getPecasCapturadas().size());
 	}
 }

@@ -2,15 +2,18 @@ package com.xadrez.project.xadrez_java.peca.bispo;
 
 import com.xadrez.project.xadrez_java.peca.Peca;
 import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
+import com.xadrez.project.xadrez_java.jogador.Jogador;
 
 public class Bispo extends Peca {
-	public Bispo(char representacao, String posicao, int jogadorResp) {
+	public Bispo(char representacao, String posicao, Jogador jogadorResp) {
 		super(representacao, posicao, jogadorResp);
 		this.direcoes = new int[][] {{-1,-1},{-1,1},{1,1},{1,-1}};
 	}
 	
+	//Sobreposição do método que calcula as possibilidades de movimento
 	@Override
 	public void calcularPossibilidades(Tabuleiro tabuleiro) {
+		if(!getPosDeMovimento().isEmpty()) getPosDeMovimento().clear();
 		int[] coord = tabuleiro.posicaoEmCoord(getPosicao());
 		for(int[] direcoes : this.direcoes) {
 			for (int i = 1; i < 8; i++) {

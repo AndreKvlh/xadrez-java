@@ -2,15 +2,18 @@ package com.xadrez.project.xadrez_java.peca.rei;
 
 import com.xadrez.project.xadrez_java.peca.Peca;
 import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
+import com.xadrez.project.xadrez_java.jogador.Jogador;
 
 public class Rei extends Peca {
-	public Rei(char representacao, String posicao, int jogadorResp) {
+	public Rei(char representacao, String posicao, Jogador jogadorResp) {
 		super(representacao, posicao, jogadorResp);
 		this.direcoes = new int[][] {{0,-1},{1,-1},{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1}};
 	}
 	
+	//Sobreposição do método que calcula as possibilidades de movimento
 	@Override
 	public void calcularPossibilidades(Tabuleiro tabuleiro) {
+		if(!getPosDeMovimento().isEmpty()) getPosDeMovimento().clear();
 		int[] coord = tabuleiro.posicaoEmCoord(getPosicao());
 		for(int[] direcoes : this.direcoes) {
 			int[] novaPos = {coord[0] + direcoes[0], coord[1] + direcoes[1]};
