@@ -17,11 +17,11 @@ public class Rei extends Peca {
 		int[] coord = tabuleiro.posicaoEmCoord(getPosicao());
 		for(int[] direcoes : this.direcoes) {
 			int[] novaPos = {coord[0] + direcoes[0], coord[1] + direcoes[1]};
-			if (novaPos[0] > 7 || novaPos[0] < 0 || novaPos[1] > 7 || novaPos[1] < 0) break;
+			if (novaPos[0] > 7 || novaPos[0] < 0 || novaPos[1] > 7 || novaPos[1] < 0) continue;
 			if (tabuleiro.getPecaNoTabuleiro(novaPos[0], novaPos[1]) != null) {
-				if (this.getJogadorResp() == tabuleiro.getPecaNoTabuleiro(novaPos[0], novaPos[1]).getJogadorResp()) break;
+				if (this.getJogadorResp() == tabuleiro.getPecaNoTabuleiro(novaPos[0], novaPos[1]).getJogadorResp()) continue;
 				getPosDeMovimento().add(tabuleiro.coordEmPosicao(novaPos[0], novaPos[1]));
-				break;
+				continue;
 			}
 			getPosDeMovimento().add(tabuleiro.coordEmPosicao(novaPos[0], novaPos[1]));
 		}

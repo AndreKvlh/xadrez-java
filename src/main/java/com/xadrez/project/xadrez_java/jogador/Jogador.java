@@ -180,6 +180,13 @@ public class Jogador {
 			tabuleiro.colocarPeca(pecaSelecionada, novaPos);
 			tabuleiro.colocarPeca(null, posPeca);
 			pecaSelecionada.setPosicao(novaPos);
+			if(pecaSelecionada.isPosInicial()) pecaSelecionada.setPosInicial(false);
+			if(pecaSelecionada.getRepresentacao() == pecasBrancas[0] || pecaSelecionada.getRepresentacao()
+	== pecasPretas[0]) {
+				if(coordNova[1] == 7 || coordNova[1] == 0) {
+					this.promoverPeao(pecaSelecionada, tabuleiro);
+				}
+			}
 			return;
 		} while (true);
 	}
@@ -198,6 +205,39 @@ public class Jogador {
 		tabuleiro.colocarPeca(pecaSelecionada, novaPos);
 		tabuleiro.colocarPeca(null, posPeca);
 		pecaSelecionada.setPosicao(novaPos);
+		if(pecaSelecionada.isPosInicial()) pecaSelecionada.setPosInicial(false);
+		if(pecaSelecionada.getRepresentacao() == pecasBrancas[0] || pecaSelecionada.getRepresentacao()
+== pecasPretas[0]) {
+			if(coordNova[1] == 7 || coordNova[1] == 0) {
+				this.promoverPeao(pecaSelecionada, tabuleiro);
+			}
+		}
+	}
+	
+	public void promoverPeao(Peca peao, Tabuleiro tabuleiro) {
+		Scanner leitor = new Scanner(System.in);
+		String opcoesPromo = "TtCcBbQq";
+		char op;
+		System.out.print("Escolha uma das peças para promover o peão: T,C,B,Q ");
+		do {
+			op = leitor.next().charAt(0);
+			if(opcoesPromo.indexOf(op) != -1) {
+				break;
+			}
+			System.out.println("Escolha inválida, tente novamente!");
+		} while (true);
+		op = peao.getJogadorResp().getJogador() == 0 ? Character.toUpperCase(op) : Character.toLowerCase(op);
+		int indice = peao.getJogadorResp().getPecasAtuais().indexOf(this);
+		if (indice != -1) {
+			Peca novaPeca = switch (op) {
+				case 'T','t' -> new Torre(op, peao.getPosicao(), peao.getJogadorResp());
+				case 'C','c' -> new Cavalo(op, peao.getPosicao(), peao.getJogadorResp());
+				case 'B','b' -> new Bispo(op, peao.getPosicao(), peao.getJogadorResp());
+				default -> new Rainha(op, peao.getPosicao(), peao.getJogadorResp());
+			};
+			peao.getJogadorResp().getPecasAtuais().set(indice, novaPeca);
+			tabuleiro.colocarPeca(novaPeca, novaPeca.getPosicao());
+		}
 	}
 	
 	public int getJogador() {

@@ -1,8 +1,14 @@
 package com.xadrez.project.xadrez_java.peca.peao;
 
-import com.xadrez.project.xadrez_java.peca.Peca;
-import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
+import java.util.Scanner;
+
 import com.xadrez.project.xadrez_java.jogador.Jogador;
+import com.xadrez.project.xadrez_java.peca.Peca;
+import com.xadrez.project.xadrez_java.peca.bispo.Bispo;
+import com.xadrez.project.xadrez_java.peca.cavalo.Cavalo;
+import com.xadrez.project.xadrez_java.peca.rainha.Rainha;
+import com.xadrez.project.xadrez_java.peca.torre.Torre;
+import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
 
 public class Peao extends Peca{
 	public Peao(char representacao, String posicao, Jogador jogadorResp) {
@@ -14,17 +20,24 @@ public class Peao extends Peca{
 	//Sobreposição do método que calcula as possibilidades de movimento
 	@Override
 	public void calcularPossibilidades(Tabuleiro tabuleiro) {
-		if(!getPosDeMovimento().isEmpty()) getPosDeMovimento().clear();
+		if(!this.getPosDeMovimento().isEmpty()) this.getPosDeMovimento().clear();
 		int[] coord = tabuleiro.posicaoEmCoord(getPosicao());
-		System.out.printf("%d,%d",coord[0],coord[1]);
+		int[][] dirAmeaca = getJogadorResp().getJogador() == 0 ? new int[][]{{-1,-1},{1,-1}} : new int[][]{{1,1},{-1,1}};
 		int[] novaPos = {coord[0] + this.direcoes[0][0], coord[1] + this.direcoes[0][1]};
-		System.out.printf("%d,%d",novaPos[0],novaPos[1]);
-		if (novaPos[0] > 7 || novaPos[1] > 7) return;
-		if (tabuleiro.getPecaNoTabuleiro(novaPos[0], novaPos[1]) != null) {
-			if (this.getJogadorResp() == tabuleiro.getPecaNoTabuleiro(novaPos[0], novaPos[1]).getJogadorResp()) return;
-			getPosDeMovimento().add(tabuleiro.coordEmPosicao(novaPos[0], novaPos[1]));
-			return;
+		if (novaPos[0] > 7 || novaPos[0] < 0 || novaPos[1] > 7 || novaPos[1] < 0) return;
+		if (tabuleiro.getPecaNoTabuleiro(novaPos[0], novaPos[1]) != null) return;
+		this.getPosDeMovimento().add(tabuleiro.coordEmPosicao(novaPos[0], novaPos[1]));
+		for(int[] direcoes : dirAmeaca) {
+			int[] posCaptura = {coord[0] + direcoes[0], coord[1] + direcoes[1]};
+			if (posCaptura[0] > 7 || posCaptura[0] < 0 || posCaptura[1] > 7 || posCaptura[1] < 0) continue;
+			if (tabuleiro.getPecaNoTabuleiro(posCaptura[0], posCaptura[1]) == null) continue;
+			if (this.getJogadorResp() == tabuleiro.getPecaNoTabuleiro(posCaptura[0], posCaptura[1]).getJogadorResp()) continue;
+			this.getPosDeMovimento().add(tabuleiro.coordEmPosicao(posCaptura[0], posCaptura[1]));
 		}
-		getPosDeMovimento().add(tabuleiro.coordEmPosicao(novaPos[0], novaPos[1]));
+		if(this.isPosInicial()) {
+			int[] passoAdicional = {coord[0] + (this.direcoes[0][0] * 2), coord[1] + (this.direcoes[0][1] * 2)};
+			if (tabuleiro.getPecaNoTabuleiro(passoAdicional[0], passoAdicional[1]) != null) return;
+			this.getPosDeMovimento().add(tabuleiro.coordEmPosicao(passoAdicional[0], passoAdicional[1]));
+		}
 	}
 }	

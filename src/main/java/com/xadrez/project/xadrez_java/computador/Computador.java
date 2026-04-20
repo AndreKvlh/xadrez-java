@@ -8,15 +8,31 @@ import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
 public class Computador {
 	//Método para selecionar uma peça que pode se mover
 	public String selecionarPeca(ArrayList<Peca> pecas, Tabuleiro tabuleiro) {
+		ArrayList<Peca> pecasPrioritarias = new ArrayList<>();
+		ArrayList<Peca> pecasQueTemMovimento = new ArrayList<>();
 		String posicaoPeca = "";
 		for(Peca peca : pecas) {
 			peca.calcularPossibilidades(tabuleiro);
 			if(peca.getPosDeMovimento().size() == 0) continue;
-			posicaoPeca = peca.getPosicao();
-			System.out.println("Cheguei no fim do loop");
-			break;
+			for(String pos : peca.getPosDeMovimento()) {
+				int[] coord = tabuleiro.posicaoEmCoord(pos);
+				if(tabuleiro.getPecaNoTabuleiro(coord[0], coord[1]) != null) {
+					pecasPrioritarias.add(peca);
+					break;
+				}
+			}
+			pecasQueTemMovimento.add(peca);
 		}
-		return posicaoPeca;
+		int aleatorio;
+		Peca pecaAleatoria = null;
+		if(pecasPrioritarias.size() != 0) {	
+			aleatorio = (int) (Math.random() * pecasPrioritarias.size());
+			pecaAleatoria = pecasPrioritarias.get(aleatorio);
+			return pecaAleatoria.getPosicao();
+		}
+		aleatorio = (int) (Math.random() * pecasQueTemMovimento.size());
+		pecaAleatoria = pecasQueTemMovimento.get(aleatorio);
+		return pecaAleatoria.getPosicao();
 	}
 	
 	//Método para selecionar a jogada com a peça escolhida
@@ -26,7 +42,7 @@ public class Computador {
 			int[] coord = tabuleiro.posicaoEmCoord(pos);
 			if(tabuleiro.getPecaNoTabuleiro(coord[0],coord[1]) != null) {
 				novaPosicao = pos;
-				break;
+				return novaPosicao;
 			}
 		}
 		int aleatorio = (int) (Math.random() * peca.getPosDeMovimento().size());
