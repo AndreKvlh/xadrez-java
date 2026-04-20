@@ -35,7 +35,7 @@ public class App extends Application
     		char opcao;
     		do {
     			jogador1.realizarJogada(tabuleiro, leitor);
-    			//jogador2.realizarJogada(tabuleiro, computador);
+    			jogador2.realizarJogada(tabuleiro, computador);
     			tabuleiro.gerarTabuleiro();
     			System.out.println("Você deseja continuar? (s/n)");
     			opcao = leitor.next().charAt(0);
