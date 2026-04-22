@@ -28,6 +28,22 @@ public class Tabuleiro {
 	private char[] colunas = {'A','B','C','D','E','F','G','H'};
 	private char[] linhas = {'8','7','6','5','4','3','2','1'};
 	
+	public Tabuleiro() {
+		
+	};
+	
+	//Construtor que copia o tabuleiro a fim de testes virtuais
+	public Tabuleiro(Tabuleiro tabuleiro) {
+		for (int linha = 0; linha < 8; linha++) {
+			for (int coluna = 0; coluna < 8; coluna++) {
+				if (tabuleiro.getPecaNoTabuleiro(linha, coluna) != null) {
+					Peca peca = tabuleiro.getPecaNoTabuleiro(linha, coluna).copiar();
+					this.colocarPeca(peca, peca.getPosicao());
+				};	
+			}
+		}
+	}
+	
 	//Função para converter uma coordenada em posição;
 	public String coordEmPosicao(int c, int l) {
 		String posicao = String.format("%c%c",this.colunas[c],this.linhas[l]);
@@ -86,7 +102,30 @@ public class Tabuleiro {
 		
 		jogadorAdv.getPecasAtuais().remove(pecaAdv);
 		jogadorAtual.getPecasCapturadas().add(pecaAdv);
-		System.out.println(jogadorAdv.getPecasAtuais().size());
-		System.out.println(jogadorAtual.getPecasCapturadas().size());
+	}
+	
+	//Método para checar xeque-mate
+	public boolean checarXequeMate (Jogador jogador) {
+		Peca reiJogador = null;
+		char repRei = jogador.getJogador() == 0 ? 'K' : 'k';
+		int jogadorAdv = jogador.getJogador() == 0 ? 1 : 0;
+		for(Peca peca : jogador.getPecasAtuais()) {
+			if (peca.getRepresentacao() == repRei) {
+				reiJogador = peca;
+				break;
+			}
+		}
+		for (int linha = 0; linha < 8; linha++) {
+			for (int coluna = 0; coluna < 8; coluna++) {
+				Peca peca = this.getPecaNoTabuleiro(linha, coluna);
+				if (peca != null) {
+					if (peca.getJogadorResp().getJogador() == jogadorAdv) {
+						peca.calcularPossibilidades(this);
+						if (peca.getPosDeMovimento().contains(reiJogador.getPosicao())) return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 }

@@ -28,4 +28,9 @@ public class Rei extends Peca {
 		if (getPosDeMovimento().isEmpty()) System.out.printf("Sem possibilidades de movimento para %c", getRepresentacao());
 		getPosDeMovimento().forEach(System.out::println);
 	}
+
+	@Override
+	public Peca copiar() {
+		return new Rei(this.representacao, this.posicao, this.jogadorResp);
+	}
 }

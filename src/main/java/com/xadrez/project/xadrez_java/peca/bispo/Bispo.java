@@ -9,7 +9,7 @@ public class Bispo extends Peca {
 		super(representacao, posicao, jogadorResp);
 		this.direcoes = new int[][] {{-1,-1},{-1,1},{1,1},{1,-1}};
 	}
-	
+
 	//Sobreposição do método que calcula as possibilidades de movimento
 	@Override
 	public void calcularPossibilidades(Tabuleiro tabuleiro) {
@@ -29,5 +29,10 @@ public class Bispo extends Peca {
 		}
 		if (getPosDeMovimento().isEmpty()) System.out.printf("Sem possibilidades de movimento para %c", getRepresentacao());
 		getPosDeMovimento().forEach(System.out::println);
+	}
+
+	@Override
+	public Peca copiar() {
+		return new Bispo(this.representacao, this.posicao, this.jogadorResp);
 	}
 }

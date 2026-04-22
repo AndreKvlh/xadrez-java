@@ -5,22 +5,22 @@ import com.xadrez.project.xadrez_java.jogador.Jogador;
 
 import java.util.ArrayList;
 
-public class Peca {
+public abstract class Peca {
 	//Atributo que representa a peça no tabuleiro
-	private char representacao;
+	protected char representacao;
 	
 	//Atributo que armazena a string da posição da peça no tabuleiro atualmente
-	private String posicao;
+	protected String posicao;
 	
 	//Atributo que armazena quem é o jogador responsável pela peça;
-	private Jogador jogadorResp;
+	protected Jogador jogadorResp;
 	
 	//Atributo que informa se essa peça saiu da posição inicial
-	private boolean posInicial;
+	protected boolean posInicial;
 	
 	//ArrayList que armazena todas as possibilidades de movimento
 	//da peça
-	private ArrayList<String> posDeMovimento = new ArrayList<>();
+	protected ArrayList<String> posDeMovimento = new ArrayList<>();
 	
 	//Variável que coordena para quantas direções a peça pode andar
 	protected int[][] direcoes;
@@ -37,6 +37,8 @@ public class Peca {
 		this.posInicial = true;
 		this.jogadorResp = jogadorResp;
 	}
+	
+	public abstract Peca copiar();
 	
 	//Método que calcula o movimento das peças e adiciona ao ArrayList
 	public void calcularPossibilidades(Tabuleiro tabuleiro) {

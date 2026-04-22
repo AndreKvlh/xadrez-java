@@ -30,4 +30,9 @@ public class Torre extends Peca {
 		if (getPosDeMovimento().isEmpty()) System.out.println("Sem possibilidades de movimento");
 		getPosDeMovimento().forEach(System.out::println);
 	}
+
+	@Override
+	public Peca copiar() {
+		return new Torre(this.representacao, this.posicao, this.jogadorResp);
+	}
 }

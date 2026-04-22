@@ -22,6 +22,12 @@ public class Jogador {
 	//Variável que define qual jogador é
 	private int jogador;
 	
+	//Variável condicional que diz se o jogador está em xeque
+	private boolean xeque = false;
+	
+	//ArrayList que traz as direções que estão ameaçando o rei do jogador
+	private ArrayList<int[]> dirAmeacadas = new ArrayList<>();
+	
 	//ArrayList que compila todas as peças que o jogador possui
 	private ArrayList<Peca> pecasAtuais = new ArrayList<>();
 	
@@ -173,6 +179,10 @@ public class Jogador {
 				continue;
 			}
 			int[] coordNova = tabuleiro.posicaoEmCoord(novaPos);
+			if(!this.jogadaVirtual(coordPeca, coordNova, tabuleiro)) {
+				System.out.println("Posição te deixará/manterá em xeque, selecione outra");
+				continue;
+			};
 			Peca conteudoPos = tabuleiro.getPecaNoTabuleiro(coordNova[0], coordNova[1]);
 			if(conteudoPos != null) {
 				tabuleiro.executarCaptura(pecaSelecionada, conteudoPos);
@@ -209,16 +219,38 @@ public class Jogador {
 		if(pecaSelecionada.getRepresentacao() == pecasBrancas[0] || pecaSelecionada.getRepresentacao()
 == pecasPretas[0]) {
 			if(coordNova[1] == 7 || coordNova[1] == 0) {
-				this.promoverPeao(pecaSelecionada, tabuleiro);
+				this.promoverPeao(pecaSelecionada, tabuleiro, computador);
 			}
 		}
 	}
 	
-	public void promoverPeao(Peca peao, Tabuleiro tabuleiro) {
+	//Método feito para ensaiar uma jogada e validar a fim de ver se ela deixa o nosso
+	//rei vulnerável
+	private boolean jogadaVirtual(int[] coordPeca, int[] coordNova, Tabuleiro tabuleiro) {
+		Tabuleiro tabVirtual = new Tabuleiro(tabuleiro);
+		Peca pecaJogada = tabVirtual.getPecaNoTabuleiro(coordPeca[0], coordPeca[1]);
+		String posPeca = pecaJogada.getPosicao();
+		String novaPos = tabVirtual.coordEmPosicao(coordNova[0], coordNova[1]);
+		tabVirtual.colocarPeca(pecaJogada, novaPos);
+		tabVirtual.colocarPeca(null, posPeca);
+		pecaJogada.setPosicao(novaPos);
+		if (tabVirtual.checarXequeMate(this)) return false;
+		return true;
+	}
+	
+	//Método para promoção de peões
+	private void promoverPeao(Peca peao, Tabuleiro tabuleiro) {
+		//Objeto scanner para adquirir o input do usuário (posteriormente será removido)
 		Scanner leitor = new Scanner(System.in);
+		
+		//String agrupando todas as possibilidades de opções
 		String opcoesPromo = "TtCcBbQq";
+		
+		//Variável que irá guardar a opção escolhida
 		char op;
 		System.out.print("Escolha uma das peças para promover o peão: T,C,B,Q ");
+		
+		//Loop que irá averiguar que se o jogador colocou a opção correta
 		do {
 			op = leitor.next().charAt(0);
 			if(opcoesPromo.indexOf(op) != -1) {
@@ -226,8 +258,13 @@ public class Jogador {
 			}
 			System.out.println("Escolha inválida, tente novamente!");
 		} while (true);
+		
+		//Opção que irá converter a peça conforme a cor que o jogador responsável usa
 		op = peao.getJogadorResp().getJogador() == 0 ? Character.toUpperCase(op) : Character.toLowerCase(op);
-		int indice = peao.getJogadorResp().getPecasAtuais().indexOf(this);
+		
+		//Pesquisa responsável para verificar e achar a peça dentre as peças que o jogador
+		//possui
+		int indice = peao.getJogadorResp().getPecasAtuais().indexOf(peao);
 		if (indice != -1) {
 			Peca novaPeca = switch (op) {
 				case 'T','t' -> new Torre(op, peao.getPosicao(), peao.getJogadorResp());
@@ -235,9 +272,19 @@ public class Jogador {
 				case 'B','b' -> new Bispo(op, peao.getPosicao(), peao.getJogadorResp());
 				default -> new Rainha(op, peao.getPosicao(), peao.getJogadorResp());
 			};
+			
+			//Alterar a peça e remover o peão
 			peao.getJogadorResp().getPecasAtuais().set(indice, novaPeca);
 			tabuleiro.colocarPeca(novaPeca, novaPeca.getPosicao());
 		}
+	}
+	
+	private void promoverPeao (Peca peao, Tabuleiro tabuleiro, Computador computador) {
+		char op = peao.getJogadorResp().getJogador() == 0 ? 'Q' : 'q';
+		int indice = peao.getJogadorResp().getPecasAtuais().indexOf(peao);
+		Peca novaPeca = new Rainha(op, peao.getPosicao(), peao.getJogadorResp());
+		peao.getJogadorResp().getPecasAtuais().set(indice, novaPeca);
+		tabuleiro.colocarPeca(novaPeca, novaPeca.getPosicao());
 	}
 	
 	public int getJogador() {
@@ -258,5 +305,13 @@ public class Jogador {
 	
 	public ArrayList<Peca> getPecasCapturadas() {
 		return pecasCapturadas;
+	}
+	
+	public boolean isXeque() {
+		return xeque;
+	}
+	
+	public void setXeque(boolean xeque) {
+		this.xeque = xeque;
 	}
 }

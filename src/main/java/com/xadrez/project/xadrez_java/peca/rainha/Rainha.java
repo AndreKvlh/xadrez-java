@@ -30,4 +30,9 @@ public class Rainha extends Peca {
 		if (getPosDeMovimento().isEmpty()) System.out.printf("Sem possibilidades de movimento para %c", getRepresentacao());
 		getPosDeMovimento().forEach(System.out::println);
 	}
+
+	@Override
+	public Peca copiar() {
+		return new Rainha(this.representacao, this.posicao, this.jogadorResp);
+	}
 }
