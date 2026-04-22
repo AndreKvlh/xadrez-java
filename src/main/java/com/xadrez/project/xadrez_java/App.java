@@ -25,10 +25,10 @@ public class App extends Application
 
     public static void main(String[] args) {
     		Scanner leitor = new Scanner(System.in);
-    		Tabuleiro tabuleiro = new Tabuleiro();
-    		Computador computador = new Computador();
     		Jogador jogador1 = new Jogador(0);
     		Jogador jogador2 = new Jogador(1);
+    		Tabuleiro tabuleiro = new Tabuleiro(jogador1, jogador2);
+    		Computador computador = new Computador();
     		jogador1.posInicialPecas(tabuleiro);
     		jogador2.posInicialPecas(tabuleiro);
     		tabuleiro.gerarTabuleiro();

@@ -13,12 +13,12 @@ public class Computador {
 		String posicaoPeca = "";
 		for(Peca peca : pecas) {
 			peca.calcularPossibilidades(tabuleiro);
-			if(peca.getPosDeMovimento().size() == 0) continue;
+			if(peca.getPosDeMovimento().size() <= 0) continue;
 			for(String pos : peca.getPosDeMovimento()) {
 				int[] coord = tabuleiro.posicaoEmCoord(pos);
 				if(tabuleiro.getPecaNoTabuleiro(coord[0], coord[1]) != null) {
 					pecasPrioritarias.add(peca);
-					break;
+					continue;
 				}
 			}
 			pecasQueTemMovimento.add(peca);

@@ -82,6 +82,10 @@ public abstract class Peca {
 		return jogadorResp;
 	}
 	
+	public void setJogadorResp(Jogador jogadorResp) {
+		this.jogadorResp = jogadorResp;
+	}
+	
 	public ArrayList<String> getPosDeMovimento() {
 		return posDeMovimento;
 	}

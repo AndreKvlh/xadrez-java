@@ -27,8 +27,6 @@ public class Torre extends Peca {
 				getPosDeMovimento().add(tabuleiro.coordEmPosicao(novaPos[0], novaPos[1]));
 			}
 		}
-		if (getPosDeMovimento().isEmpty()) System.out.println("Sem possibilidades de movimento");
-		getPosDeMovimento().forEach(System.out::println);
 	}
 
 	@Override

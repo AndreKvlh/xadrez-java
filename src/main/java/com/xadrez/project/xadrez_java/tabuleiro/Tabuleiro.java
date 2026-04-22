@@ -22,23 +22,41 @@ public class Tabuleiro {
 			{0,1,0,1,0,1,0,1}
 	};
 	
+	//Variáveis que armazenam as informações dos jogadores
+	private Jogador jogador1;
+	private Jogador jogador2;
+	
 	//Arrays que compilam as colunas e linhas de forma 
 	//igual a de um tabuleiro, começando a contar a partir
 	//do canto inferior esquerdo
 	private char[] colunas = {'A','B','C','D','E','F','G','H'};
 	private char[] linhas = {'8','7','6','5','4','3','2','1'};
 	
-	public Tabuleiro() {
-		
+	public Tabuleiro(Jogador j1, Jogador j2) {
+		this.jogador1 = j1;
+		this.jogador2 = j2;
 	};
 	
 	//Construtor que copia o tabuleiro a fim de testes virtuais
 	public Tabuleiro(Tabuleiro tabuleiro) {
+		//Copia os jogadores no estado atual
+		this.jogador1 = new Jogador(tabuleiro.getJogadores()[0]);
+		this.jogador2 = new Jogador(tabuleiro.getJogadores()[1]);
+		
 		for (int linha = 0; linha < 8; linha++) {
 			for (int coluna = 0; coluna < 8; coluna++) {
+				Peca pecaOriginal = tabuleiro.getPecaNoTabuleiro(linha, coluna);
+				
 				if (tabuleiro.getPecaNoTabuleiro(linha, coluna) != null) {
-					Peca peca = tabuleiro.getPecaNoTabuleiro(linha, coluna).copiar();
-					this.colocarPeca(peca, peca.getPosicao());
+					Peca pecaCopia = pecaOriginal.copiar();
+					
+					Jogador donoOriginal = pecaOriginal.getJogadorResp();
+					Jogador donoNovo = donoOriginal == tabuleiro.getJogadores()[0] ? this.jogador1 : this.jogador2;
+					
+					pecaCopia.setJogadorResp(donoNovo);
+					donoNovo.getPecasAtuais().add(pecaCopia);
+					
+					this.colocarPeca(pecaCopia, pecaCopia.getPosicao());
 				};	
 			}
 		}
@@ -95,6 +113,12 @@ public class Tabuleiro {
 		return this.pecasNoTabuleiro[coluna][linha];
 	}
 	
+	//Obter a informação dos jogadores atuais
+	public Jogador[] getJogadores() {
+		Jogador[] jogadores = {this.jogador1, this.jogador2};
+		return jogadores;
+	}
+	
 	//Método para executar a captura de peças
 	public void executarCaptura (Peca pecaJogador, Peca pecaAdv) {
 		Jogador jogadorAtual = pecaJogador.getJogadorResp();
@@ -121,7 +145,10 @@ public class Tabuleiro {
 				if (peca != null) {
 					if (peca.getJogadorResp().getJogador() == jogadorAdv) {
 						peca.calcularPossibilidades(this);
-						if (peca.getPosDeMovimento().contains(reiJogador.getPosicao())) return true;
+						if (peca.getPosDeMovimento().contains(reiJogador.getPosicao())) {
+							System.out.println("Rei está em xeque!");
+							return true;
+						}
 					}
 				}
 			}

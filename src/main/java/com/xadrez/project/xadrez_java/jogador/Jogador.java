@@ -26,7 +26,7 @@ public class Jogador {
 	private boolean xeque = false;
 	
 	//ArrayList que traz as direções que estão ameaçando o rei do jogador
-	private ArrayList<int[]> dirAmeacadas = new ArrayList<>();
+	//private ArrayList<int[]> dirAmeacadas = new ArrayList<>();
 	
 	//ArrayList que compila todas as peças que o jogador possui
 	private ArrayList<Peca> pecasAtuais = new ArrayList<>();
@@ -36,6 +36,14 @@ public class Jogador {
 	
 	public Jogador(int jogador) {
 		this.jogador = jogador;
+	}
+	
+	//Construtor de cópia de objeto
+	public Jogador(Jogador outro) {
+		this.jogador = outro.jogador;
+		this.pecasAtuais = new ArrayList<>();
+		this.pecasCapturadas = new ArrayList<>();
+		this.xeque = outro.xeque;
 	}
 	
 	//Método que define quais são as peças e suas posições
@@ -203,7 +211,9 @@ public class Jogador {
 	
 	//Método sobrecarregado para caso haja um controle do computador
 	public void realizarJogada(Tabuleiro tabuleiro, Computador computador) {
+		System.out.println(this.getPecasAtuais());
 		String posPeca = computador.selecionarPeca(this.getPecasAtuais(), tabuleiro);
+		System.out.println(posPeca);
 		int[] coordPeca = tabuleiro.posicaoEmCoord(posPeca);
 		Peca pecaSelecionada = tabuleiro.getPecaNoTabuleiro(coordPeca[0], coordPeca[1]);
 		String novaPos = computador.moverPeca(pecaSelecionada,tabuleiro);
@@ -228,13 +238,14 @@ public class Jogador {
 	//rei vulnerável
 	private boolean jogadaVirtual(int[] coordPeca, int[] coordNova, Tabuleiro tabuleiro) {
 		Tabuleiro tabVirtual = new Tabuleiro(tabuleiro);
+		Jogador jgVirtual = this.getJogador() == 0 ? tabVirtual.getJogadores()[0] : tabVirtual.getJogadores()[1];
 		Peca pecaJogada = tabVirtual.getPecaNoTabuleiro(coordPeca[0], coordPeca[1]);
 		String posPeca = pecaJogada.getPosicao();
 		String novaPos = tabVirtual.coordEmPosicao(coordNova[0], coordNova[1]);
 		tabVirtual.colocarPeca(pecaJogada, novaPos);
 		tabVirtual.colocarPeca(null, posPeca);
 		pecaJogada.setPosicao(novaPos);
-		if (tabVirtual.checarXequeMate(this)) return false;
+		if (tabVirtual.checarXequeMate(jgVirtual)) return false;
 		return true;
 	}
 	

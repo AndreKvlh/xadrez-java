@@ -27,8 +27,6 @@ public class Bispo extends Peca {
 				getPosDeMovimento().add(tabuleiro.coordEmPosicao(novaPos[0], novaPos[1]));
 			}
 		}
-		if (getPosDeMovimento().isEmpty()) System.out.printf("Sem possibilidades de movimento para %c", getRepresentacao());
-		getPosDeMovimento().forEach(System.out::println);
 	}
 
 	@Override
