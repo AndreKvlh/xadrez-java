@@ -211,13 +211,21 @@ public class Jogador {
 	
 	//Método sobrecarregado para caso haja um controle do computador
 	public void realizarJogada(Tabuleiro tabuleiro, Computador computador) {
-		System.out.println(this.getPecasAtuais());
-		String posPeca = computador.selecionarPeca(this.getPecasAtuais(), tabuleiro);
-		System.out.println(posPeca);
-		int[] coordPeca = tabuleiro.posicaoEmCoord(posPeca);
-		Peca pecaSelecionada = tabuleiro.getPecaNoTabuleiro(coordPeca[0], coordPeca[1]);
-		String novaPos = computador.moverPeca(pecaSelecionada,tabuleiro);
-		int[] coordNova = tabuleiro.posicaoEmCoord(novaPos);
+		//Atributos para obtenção das informações da jogada
+		String posPeca, novaPos;
+		int[] coordPeca, coordNova;
+		Peca pecaSelecionada;
+		
+		//Loop que irá ser realizado enquanto o rei permanecer em xeque (caso esteja)
+		do {
+			posPeca = computador.selecionarPeca(this.getPecasAtuais(), tabuleiro);
+			coordPeca = tabuleiro.posicaoEmCoord(posPeca);
+			pecaSelecionada = tabuleiro.getPecaNoTabuleiro(coordPeca[0], coordPeca[1]);
+			novaPos = computador.moverPeca(pecaSelecionada,tabuleiro);
+			coordNova = tabuleiro.posicaoEmCoord(novaPos);
+		} while (!this.jogadaVirtual(coordPeca, coordNova, tabuleiro));
+		
+		//Finalizado o loop, o jogo vai resumir e fazer a jogada do computador
 		Peca conteudoPos = tabuleiro.getPecaNoTabuleiro(coordNova[0], coordNova[1]);
 		if(conteudoPos != null) {
 			tabuleiro.executarCaptura(pecaSelecionada, conteudoPos);
