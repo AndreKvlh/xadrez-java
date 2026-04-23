@@ -1,10 +1,8 @@
 package com.xadrez.project.xadrez_java.tabuleiro;
 
 import com.xadrez.project.xadrez_java.peca.Peca;
+import com.xadrez.project.xadrez_java.peca.TipoPeca;
 import com.xadrez.project.xadrez_java.jogador.Jogador;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 public class Tabuleiro {
 	//Matriz de controle das peças e movimentos;
@@ -23,8 +21,7 @@ public class Tabuleiro {
 	};
 	
 	//Variáveis que armazenam as informações dos jogadores
-	private Jogador jogador1;
-	private Jogador jogador2;
+	private Jogador[] jogadores;
 	
 	//Arrays que compilam as colunas e linhas de forma 
 	//igual a de um tabuleiro, começando a contar a partir
@@ -33,33 +30,26 @@ public class Tabuleiro {
 	private char[] linhas = {'8','7','6','5','4','3','2','1'};
 	
 	public Tabuleiro(Jogador j1, Jogador j2) {
-		this.jogador1 = j1;
-		this.jogador2 = j2;
+		this.jogadores = new Jogador[] {j1,j2};
 	};
 	
 	//Construtor que copia o tabuleiro a fim de testes virtuais
 	public Tabuleiro(Tabuleiro tabuleiro) {
 		//Copia os jogadores no estado atual
-		this.jogador1 = new Jogador(tabuleiro.getJogadores()[0]);
-		this.jogador2 = new Jogador(tabuleiro.getJogadores()[1]);
-		
-		for (int linha = 0; linha < 8; linha++) {
-			for (int coluna = 0; coluna < 8; coluna++) {
-				Peca pecaOriginal = tabuleiro.getPecaNoTabuleiro(linha, coluna);
+		this.jogadores = new Jogador[] {new Jogador(tabuleiro.getJogadores()[0]), new Jogador(tabuleiro.getJogadores()[1])};
+
+		for (Jogador jogador : tabuleiro.getJogadores()) {
+			for (Peca pecaOriginal : jogador.getPecasAtuais()) {
+				Peca pecaCopia = pecaOriginal.copiar();
 				
-				if (tabuleiro.getPecaNoTabuleiro(linha, coluna) != null) {
-					Peca pecaCopia = pecaOriginal.copiar();
-					
-					Jogador donoOriginal = pecaOriginal.getJogadorResp();
-					Jogador donoNovo = donoOriginal == tabuleiro.getJogadores()[0] ? this.jogador1 : this.jogador2;
-					
-					pecaCopia.setJogadorResp(donoNovo);
-					donoNovo.getPecasAtuais().add(pecaCopia);
-					
-					this.colocarPeca(pecaCopia, pecaCopia.getPosicao());
-				};	
+				Jogador donoNovo = (pecaOriginal.getJogadorResp() == tabuleiro.getJogadores()[0]) ? this.jogadores[0] : this.jogadores[1];
+				pecaCopia.setJogadorResp(donoNovo);
+				
+				donoNovo.getPecasAtuais().add(pecaCopia);
+				this.inserirPeca(pecaCopia);
 			}
 		}
+		
 	}
 	
 	//Função para converter uma coordenada em posição;
@@ -91,6 +81,19 @@ public class Tabuleiro {
 		pecasNoTabuleiro[coord[1]][coord[0]] = p;
 	}
 	
+	//Alteração do método acima
+	public void inserirPeca(Peca peca) {
+		int[] coord = peca.getPosicaoAtual().getCoord();
+		pecasNoTabuleiro[coord[1]][coord[0]] = peca;
+	}
+	
+	//Método para limpar a posição que contém uma peça
+	public void removerPeca(Posicao pos) {
+		if (this.getPeca(pos) == null) return;
+		int[] coord = pos.getCoord();
+		pecasNoTabuleiro[coord[1]][coord[0]] = null;
+	}
+	
 	//Gerar o tabuleiro no console
 	public void gerarTabuleiro() {
 		for (int linha = 0; linha < 8; linha++) {
@@ -101,7 +104,9 @@ public class Tabuleiro {
 					System.out.print(" ");
 					continue;
 				}
-				System.out.print(pecasNoTabuleiro[linha][coluna].getRepresentacao());
+				Peca peca = pecasNoTabuleiro[linha][coluna];
+				char tipo = peca.getTipo().getSimbolo(peca.getCor().getCorPeca());
+				System.out.print(tipo);
 			}
 			System.out.println("|");
 		}
@@ -113,10 +118,15 @@ public class Tabuleiro {
 		return this.pecasNoTabuleiro[coluna][linha];
 	}
 	
+	//Método que substituirá o acima
+	public Peca getPeca (Posicao pos) {
+		int[] coord = pos.getCoord();
+		return this.pecasNoTabuleiro[coord[1]][coord[0]];
+	}
+	
 	//Obter a informação dos jogadores atuais
 	public Jogador[] getJogadores() {
-		Jogador[] jogadores = {this.jogador1, this.jogador2};
-		return jogadores;
+		return this.jogadores;
 	}
 	
 	//Método para executar a captura de peças
@@ -128,29 +138,33 @@ public class Tabuleiro {
 		jogadorAtual.getPecasCapturadas().add(pecaAdv);
 	}
 	
+	public void executarMovimento(Peca peca, Posicao posAntiga, Posicao posNova) {
+		System.out.println(peca);
+		Peca pecaInimiga = this.getPeca(posNova);
+		if(pecaInimiga != null) {
+			this.executarCaptura(peca, pecaInimiga);
+		}
+		peca.setPosicaoAtual(posNova);
+		this.inserirPeca(peca);
+		this.removerPeca(posAntiga);
+		if(peca.isPosInicial()) peca.setPosInicial(false);
+	}
+	
 	//Método para checar xeque-mate
 	public boolean checarXequeMate (Jogador jogador) {
 		Peca reiJogador = null;
-		char repRei = jogador.getJogador() == 0 ? 'K' : 'k';
-		int jogadorAdv = jogador.getJogador() == 0 ? 1 : 0;
+		Jogador jogadorAdv = jogador.getJogador() == 0 ? this.jogadores[1] : this.jogadores[0];
 		for(Peca peca : jogador.getPecasAtuais()) {
-			if (peca.getRepresentacao() == repRei) {
+			if (peca.getTipo().equals(TipoPeca.REI)) {
 				reiJogador = peca;
 				break;
 			}
 		}
-		for (int linha = 0; linha < 8; linha++) {
-			for (int coluna = 0; coluna < 8; coluna++) {
-				Peca peca = this.getPecaNoTabuleiro(linha, coluna);
-				if (peca != null) {
-					if (peca.getJogadorResp().getJogador() == jogadorAdv) {
-						peca.calcularPossibilidades(this);
-						if (peca.getPosDeMovimento().contains(reiJogador.getPosicao())) {
-							System.out.println("Rei está em xeque!");
-							return true;
-						}
-					}
-				}
+		for(Peca peca : jogadorAdv.getPecasAtuais()) {
+			peca.calcularPossibilidades(this);
+			if (peca.getPosDeMovimento().contains(reiJogador.getPosicaoAtual())) {
+				System.out.println("Rei está em xeque!");
+				return true;
 			}
 		}
 		return false;

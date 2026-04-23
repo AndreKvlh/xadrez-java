@@ -8,7 +8,7 @@ public enum CorPeca {
 		this.cor = cor;
 	}
 	
-	public int getCor() {
+	public int getCorPeca() {
 		return this.cor;
 	}
 }

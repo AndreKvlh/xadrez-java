@@ -13,8 +13,8 @@ public enum TipoPeca {
 		this.simbolo = simbolo;
 	}
 	
-	private char getSimbolo(int cor) {
+	public char getSimbolo(int cor) {
 		if (cor == 1) return this.simbolo;
-		return Character.toUpperCase(this.simbolo);
+		return Character.toLowerCase(this.simbolo);
 	}
 }

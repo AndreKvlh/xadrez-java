@@ -1,16 +1,26 @@
 package com.xadrez.project.xadrez_java.peca;
 
-import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
-import com.xadrez.project.xadrez_java.jogador.Jogador;
-
 import java.util.ArrayList;
+
+import com.xadrez.project.xadrez_java.jogador.Jogador;
+import com.xadrez.project.xadrez_java.tabuleiro.Coluna;
+import com.xadrez.project.xadrez_java.tabuleiro.Linha;
+import com.xadrez.project.xadrez_java.tabuleiro.Posicao;
+import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
 
 public abstract class Peca {
 	//Atributo que representa a peça no tabuleiro
 	protected char representacao;
 	
+	//Atributos que substitui o acima
+	protected TipoPeca tipo;
+	protected CorPeca cor;
+	
 	//Atributo que armazena a string da posição da peça no tabuleiro atualmente
 	protected String posicao;
+	
+	//Atributo que substitui o acima
+	protected Posicao posicaoAtual;
 	
 	//Atributo que armazena quem é o jogador responsável pela peça;
 	protected Jogador jogadorResp;
@@ -20,30 +30,54 @@ public abstract class Peca {
 	
 	//ArrayList que armazena todas as possibilidades de movimento
 	//da peça
-	protected ArrayList<String> posDeMovimento = new ArrayList<>();
+	protected ArrayList<Posicao> posDeMovimento = new ArrayList<>();
 	
 	//Variável que coordena para quantas direções a peça pode andar
 	protected int[][] direcoes;
 	
 	//Variável que delimita o número de casas que a peça pode andar. Zero representa não
 	//ter limite
-	private int limMovimento;
+	protected boolean limMovimento;
 	
 	//Construtor
-	public Peca(char representacao, String posicao, Jogador jogadorResp) {
+	public Peca(CorPeca cor, Posicao posicaoAtual, Jogador jogadorResp) {
 		super();
-		this.representacao = representacao;
-		this.posicao = posicao;
+		this.cor = cor;
+		this.posicaoAtual = posicaoAtual;
 		this.posInicial = true;
 		this.jogadorResp = jogadorResp;
 	}
 	
 	public abstract Peca copiar();
 	
-	//Método que calcula o movimento das peças e adiciona ao ArrayList
+	public boolean validarMovimento(Posicao posNova, Tabuleiro tabuleiro) {
+		this.calcularPossibilidades(tabuleiro);
+		if (!this.getPosDeMovimento().contains(posNova)) {
+			System.out.println("Movimento inválido! Tente novamente");
+			return false;
+		}
+		return true;
+	}
+	
 	public void calcularPossibilidades(Tabuleiro tabuleiro) {
-		int[] coord = tabuleiro.posicaoEmCoord(this.posicao);
-		posDeMovimento.add(tabuleiro.coordEmPosicao(coord[0], coord[0] + 1));
+		if(!getPosDeMovimento().isEmpty()) getPosDeMovimento().clear();
+		int[] coord = this.posicaoAtual.getCoord();
+		int distancia = !this.limMovimento ? 8 : 2;
+		for(int[] direcoes : this.direcoes) {
+			for (int i = 1; i < distancia; i++) {
+				int colAtual = coord[0] + (i * direcoes[0]);
+				int linAtual = coord[1] + (i * direcoes[1]);
+				if (colAtual > 7 || colAtual < 0 || linAtual > 7 || linAtual < 0) break;
+				Posicao posAtual = new Posicao(Coluna.deIndice(colAtual), Linha.deIndice(linAtual));
+				Peca conteudoPeca = tabuleiro.getPeca(posAtual);
+				if (conteudoPeca != null) {
+					if (this.getCor().equals(conteudoPeca.getCor())) break;
+					getPosDeMovimento().add(posAtual);
+					break;
+				}
+				getPosDeMovimento().add(posAtual);
+			}
+		}
 	}
 
 	public String getPosicao() {
@@ -62,14 +96,6 @@ public abstract class Peca {
 		this.posInicial = posInicial;
 	}
 
-	public int getLimMovimento() {
-		return limMovimento;
-	}
-
-	public void setLimMovimento(int limMovimento) {
-		this.limMovimento = limMovimento;
-	}
-
 	public char getRepresentacao() {
 		return representacao;
 	}
@@ -86,7 +112,31 @@ public abstract class Peca {
 		this.jogadorResp = jogadorResp;
 	}
 	
-	public ArrayList<String> getPosDeMovimento() {
+	public ArrayList<Posicao> getPosDeMovimento() {
 		return posDeMovimento;
+	}
+
+	public Posicao getPosicaoAtual() {
+		return posicaoAtual;
+	}
+
+	public void setPosicaoAtual(Posicao posicaoAtual) {
+		this.posicaoAtual = posicaoAtual;
+	}
+
+	public TipoPeca getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(TipoPeca tipo) {
+		this.tipo = tipo;
+	}
+
+	public CorPeca getCor() {
+		return cor;
+	}
+
+	public void setCor(CorPeca cor) {
+		this.cor = cor;
 	}
 }
