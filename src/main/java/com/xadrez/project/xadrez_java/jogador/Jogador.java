@@ -6,7 +6,6 @@ import java.util.Scanner;
 import com.xadrez.project.xadrez_java.computador.Computador;
 import com.xadrez.project.xadrez_java.peca.CorPeca;
 import com.xadrez.project.xadrez_java.peca.Peca;
-import com.xadrez.project.xadrez_java.peca.TipoPeca;
 import com.xadrez.project.xadrez_java.peca.bispo.Bispo;
 import com.xadrez.project.xadrez_java.peca.cavalo.Cavalo;
 import com.xadrez.project.xadrez_java.peca.peao.Peao;
@@ -19,11 +18,6 @@ import com.xadrez.project.xadrez_java.tabuleiro.Posicao;
 import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
 
 public class Jogador {
-	//Define as peças de cada cor, diferenciadas pelo fato de serem
-	//Maíusculas ou não
-	private char[] pecasBrancas = {'P','T','C','B','K','Q'};
-	private char[] pecasPretas = {'p','t','c','b','k','q'};
-	
 	//Variável que define qual jogador é
 	private int jogador;
 	
@@ -88,14 +82,15 @@ public class Jogador {
 	//Método que checa a jogada e sendo ela válida fará ela acontecer
 	public void realizarJogada(Tabuleiro tabuleiro, Scanner leitor) {
 		//Atributos para obtenção das informações da jogada
+		String op;
 		Posicao posAntiga, posNova;
 		Peca pecaSelecionada;
 		
 		do {
 			System.out.print("Digite a posição referente a peça que você quer selecionar: ");
-			posAntiga = Posicao.converterStringEmPos(leitor.next());
-			
-			if (!this.checarOutOfBounds(posAntiga, tabuleiro)) continue;
+			op = leitor.next();
+			if (!this.checarOutOfBounds(op)) continue;
+			posAntiga = Posicao.converterStringEmPos(op);
 			pecaSelecionada = tabuleiro.getPeca(posAntiga);
 			
 			if(!this.checarPecaValida(pecaSelecionada)) continue;
@@ -109,20 +104,21 @@ public class Jogador {
 			if(!this.validarJogada(posAntiga, posNova, tabuleiro)) continue;
 			break;
 		} while (true);
-		
 		tabuleiro.executarMovimento(pecaSelecionada, posAntiga, posNova);
-		/*if(pecaSelecionada.getTipo().equals(TipoPeca.PEAO)) {
-			if(coordNova[1] == 7 || coordNova[1] == 0) {
-				this.promoverPeao(pecaSelecionada, tabuleiro);
-			}
-		}*/
+		if(this.checarPromocao(pecaSelecionada)) this.promoverPeao(pecaSelecionada, tabuleiro);
 	}
 	
-	private boolean checarOutOfBounds(Posicao pos, Tabuleiro tabuleiro) {
-		Peca pecaSelecionada;
+	private boolean checarPromocao(Peca peca) {
+		if (!(peca instanceof Peao)) return false;
+		int dy = peca.getPosicaoAtual().getCoord()[1];
+		if (dy != 7 && dy != 0) return false; 
+		return true;
+	}
+	
+	private boolean checarOutOfBounds(String s) {
 		try {
-			pecaSelecionada = tabuleiro.getPeca(pos);
-		} catch (ArrayIndexOutOfBoundsException e) {
+			Posicao.converterStringEmPos(s);
+		} catch (IllegalArgumentException e) {
 			System.out.println("Posição inválida! Tente novamente");
 			return false;
 		}
@@ -155,11 +151,7 @@ public class Jogador {
 			posNova = computador.moverPeca(pecaSelecionada,tabuleiro);
 		} while (!this.validarJogada(posAntiga, posNova, tabuleiro));
 		tabuleiro.executarMovimento(pecaSelecionada, posAntiga, posNova);
-		/*if(pecaSelecionada.getTipo().equals(TipoPeca.PEAO)) {
-			if(coordNova[1] == 7 || coordNova[1] == 0) {
-				this.promoverPeao(pecaSelecionada, tabuleiro, computador);
-			}
-		}*/
+		if(this.checarPromocao(pecaSelecionada)) this.promoverPeao(pecaSelecionada, tabuleiro, computador);
 	}
 	
 	//Método feito para ensaiar uma jogada e validar a fim de ver se ela deixa o nosso
@@ -212,16 +204,16 @@ public class Jogador {
 			
 			//Alterar a peça e remover o peão
 			peao.getJogadorResp().getPecasAtuais().set(indice, novaPeca);
-			tabuleiro.colocarPeca(novaPeca, novaPeca.getPosicao());
+			tabuleiro.inserirPeca(novaPeca);
 		}
+		leitor.close();
 	}
 	
 	private void promoverPeao (Peca peao, Tabuleiro tabuleiro, Computador computador) {
-		char op = peao.getJogadorResp().getJogador() == 0 ? 'Q' : 'q';
 		int indice = peao.getJogadorResp().getPecasAtuais().indexOf(peao);
 		Peca novaPeca = new Rainha(peao.getCor(), peao.getPosicaoAtual(), peao.getJogadorResp());
 		peao.getJogadorResp().getPecasAtuais().set(indice, novaPeca);
-		tabuleiro.colocarPeca(novaPeca, novaPeca.getPosicao());
+		tabuleiro.inserirPeca(novaPeca);
 	}
 	
 	public int getJogador() {

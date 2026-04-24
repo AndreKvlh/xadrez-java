@@ -1,7 +1,6 @@
 package com.xadrez.project.xadrez_java;
 
 import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
-import com.xadrez.project.xadrez_java.peca.Peca;
 import com.xadrez.project.xadrez_java.jogador.Jogador;
 import com.xadrez.project.xadrez_java.computador.Computador;
 
