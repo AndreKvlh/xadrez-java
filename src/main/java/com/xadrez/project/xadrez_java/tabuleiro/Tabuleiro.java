@@ -1,7 +1,6 @@
 package com.xadrez.project.xadrez_java.tabuleiro;
 
 import com.xadrez.project.xadrez_java.peca.Peca;
-import com.xadrez.project.xadrez_java.peca.TipoPeca;
 import com.xadrez.project.xadrez_java.jogador.Jogador;
 
 public class Tabuleiro {
@@ -127,46 +126,5 @@ public class Tabuleiro {
 	//Obter a informação dos jogadores atuais
 	public Jogador[] getJogadores() {
 		return this.jogadores;
-	}
-	
-	//Método para executar a captura de peças
-	public void executarCaptura (Peca pecaJogador, Peca pecaAdv) {
-		Jogador jogadorAtual = pecaJogador.getJogadorResp();
-		Jogador jogadorAdv = pecaAdv.getJogadorResp();
-		
-		jogadorAdv.getPecasAtuais().remove(pecaAdv);
-		jogadorAtual.getPecasCapturadas().add(pecaAdv);
-	}
-	
-	public void executarMovimento(Peca peca, Posicao posAntiga, Posicao posNova) {
-		System.out.println(peca);
-		Peca pecaInimiga = this.getPeca(posNova);
-		if(pecaInimiga != null) {
-			this.executarCaptura(peca, pecaInimiga);
-		}
-		peca.setPosicaoAtual(posNova);
-		this.inserirPeca(peca);
-		this.removerPeca(posAntiga);
-		if(peca.isPosInicial()) peca.setPosInicial(false);
-	}
-	
-	//Método para checar xeque-mate
-	public boolean checarXequeMate (Jogador jogador) {
-		Peca reiJogador = null;
-		Jogador jogadorAdv = jogador.getJogador() == 0 ? this.jogadores[1] : this.jogadores[0];
-		for(Peca peca : jogador.getPecasAtuais()) {
-			if (peca.getTipo().equals(TipoPeca.REI)) {
-				reiJogador = peca;
-				break;
-			}
-		}
-		for(Peca peca : jogadorAdv.getPecasAtuais()) {
-			peca.calcularPossibilidades(this);
-			if (peca.getPosDeMovimento().contains(reiJogador.getPosicaoAtual())) {
-				System.out.println("Rei está em xeque!");
-				return true;
-			}
-		}
-		return false;
 	}
 }

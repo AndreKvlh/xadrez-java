@@ -1,16 +1,14 @@
 package com.xadrez.project.xadrez_java;
 
-import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
-import com.xadrez.project.xadrez_java.jogador.Jogador;
-import com.xadrez.project.xadrez_java.computador.Computador;
+import java.util.Scanner;
+
+import com.xadrez.project.xadrez_java.jogo.Jogo;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-
-import java.util.Scanner;
 
 public class App extends Application
 {	
@@ -24,18 +22,17 @@ public class App extends Application
 
     public static void main(String[] args) {
     		Scanner leitor = new Scanner(System.in);
-    		Jogador jogador1 = new Jogador(0);
+    		/*Jogador jogador1 = new Jogador(0);
     		Jogador jogador2 = new Jogador(1);
     		Tabuleiro tabuleiro = new Tabuleiro(jogador1, jogador2);
     		Computador computador = new Computador();
     		jogador1.posInicialPecas(tabuleiro);
     		jogador2.posInicialPecas(tabuleiro);
-    		tabuleiro.gerarTabuleiro();
+    		tabuleiro.gerarTabuleiro();*/
+    		Jogo jogo = new Jogo();
     		char opcao;
     		do {
-    			jogador1.realizarJogada(tabuleiro, leitor);
-    			jogador2.realizarJogada(tabuleiro, computador);
-    			tabuleiro.gerarTabuleiro();
+    			jogo.rodarJogo();
     			System.out.println("Você deseja continuar? (s/n)");
     			opcao = leitor.next().charAt(0);
     		} while (opcao != 'n');
