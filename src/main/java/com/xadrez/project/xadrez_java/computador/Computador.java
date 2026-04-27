@@ -8,7 +8,7 @@ import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
 
 public class Computador {
 	//Método para selecionar uma peça que pode se mover
-	public Peca selecionarPeca(ArrayList<Peca> pecas, Tabuleiro tabuleiro) {
+	public String selecionarPeca(ArrayList<Peca> pecas, Tabuleiro tabuleiro) {
 		ArrayList<Peca> pecasPrioritarias = new ArrayList<>();
 		ArrayList<Peca> pecasQueTemMovimento = new ArrayList<>();
 		Peca pecaSelecionada;
@@ -27,22 +27,22 @@ public class Computador {
 		if(pecasPrioritarias.size() != 0) {	
 			aleatorio = (int) (Math.random() * pecasPrioritarias.size());
 			pecaSelecionada = pecasPrioritarias.get(aleatorio);
-			return pecaSelecionada;
+			return pecaSelecionada.getPosicaoAtual().posicao();
 		}
 		aleatorio = (int) (Math.random() * pecasQueTemMovimento.size());
 		pecaSelecionada = pecasQueTemMovimento.get(aleatorio);
-		return pecaSelecionada;
+		return pecaSelecionada.getPosicaoAtual().posicao();
 	}
 	
 	//Método para selecionar a jogada com a peça escolhida
-	public Posicao moverPeca(Peca peca, Tabuleiro tabuleiro) {
+	public String moverPeca(Peca peca, Tabuleiro tabuleiro) {
 		for(Posicao pos : peca.getPosDeMovimento()) {
 			if(tabuleiro.getPeca(pos) != null) {
-				return pos;
+				return pos.posicao();
 			}
 		}
 		int aleatorio = (int) (Math.random() * peca.getPosDeMovimento().size());
 		Posicao novaPosicao = peca.getPosDeMovimento().get(aleatorio);
-		return novaPosicao;
+		return novaPosicao.posicao();
 	}
 }

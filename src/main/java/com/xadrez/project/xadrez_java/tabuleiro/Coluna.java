@@ -2,11 +2,13 @@ package com.xadrez.project.xadrez_java.tabuleiro;
 
 public enum Coluna {
 	//{'A','B','C','D','E','F','G','H'};
-	A(0), B(1), C(2), D(3), E(4), F(5), G(6), H(7);
+	A(0, 'A'), B(1, 'B'), C(2, 'C'), D(3, 'D'), E(4, 'E'), F(5, 'F'), G(6, 'G'), H(7, 'H');
 	private final int indice;
+	private final char simbolo;
 	
-	Coluna (int indice) {
+	Coluna (int indice, char simbolo) {
 		this.indice = indice;
+		this.simbolo = simbolo;
 	}
 	
 	public static Coluna deIndice (int indice) {
@@ -18,5 +20,9 @@ public enum Coluna {
 	
 	public int getIndice() {
 		return this.indice;
+	}
+	
+	public char simbolo() {
+		return this.simbolo;
 	}
 }

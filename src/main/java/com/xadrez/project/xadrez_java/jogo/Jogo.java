@@ -2,8 +2,11 @@ package com.xadrez.project.xadrez_java.jogo;
 
 import java.util.Scanner;
 
+import com.xadrez.project.xadrez_java.acoes.Jogada;
 import com.xadrez.project.xadrez_java.acoes.Movimento;
 import com.xadrez.project.xadrez_java.jogador.Jogador;
+import com.xadrez.project.xadrez_java.jogador.JogadorHumano;
+import com.xadrez.project.xadrez_java.jogador.JogadorIA;
 import com.xadrez.project.xadrez_java.peca.CorPeca;
 import com.xadrez.project.xadrez_java.peca.Peca;
 import com.xadrez.project.xadrez_java.peca.bispo.Bispo;
@@ -12,6 +15,7 @@ import com.xadrez.project.xadrez_java.peca.peao.Peao;
 import com.xadrez.project.xadrez_java.peca.rainha.Rainha;
 import com.xadrez.project.xadrez_java.peca.rei.Rei;
 import com.xadrez.project.xadrez_java.peca.torre.Torre;
+import com.xadrez.project.xadrez_java.regras.Validador;
 import com.xadrez.project.xadrez_java.tabuleiro.Coluna;
 import com.xadrez.project.xadrez_java.tabuleiro.Linha;
 import com.xadrez.project.xadrez_java.tabuleiro.Posicao;
@@ -21,13 +25,19 @@ public class Jogo {
 	private final Jogador[] jogadores;
 	private final Tabuleiro tabuleiro;
 	private final Movimento movimento;
+	private final Validador validador;
 	private final Scanner leitor;
 	
+	//Atributo que controla o estado do jogo
+	private boolean jogoAtivo;
+	
 	public Jogo() {
-		this.jogadores = new Jogador[] {new Jogador(0), new Jogador(1)};
+		this.validador = new Validador();
+		this.leitor = new Scanner(System.in);
+		this.jogadores = new Jogador[] {new JogadorHumano(0, this.leitor), new JogadorIA(1)};
 		this.tabuleiro = new Tabuleiro(this.jogadores[0],this.jogadores[1]);
 		this.movimento = new Movimento(this.tabuleiro);
-		this.leitor = new Scanner(System.in);
+		this.jogoAtivo = false;
 	}
 	
 	//Método que irá inicializar o tabuleiro de cada jogador, atribuindo 
@@ -77,9 +87,6 @@ public class Jogo {
 	
 	//Método responsável por promover o peão quando este chegar ao fim do tabuleiro
 	public void promoverPeao(Peca peao, Tabuleiro tabuleiro) {
-		//Objeto scanner para adquirir o input do usuário (posteriormente será removido)
-		Scanner leitor = new Scanner(System.in);
-		
 		//String agrupando todas as possibilidades de opções
 		String opcoesPromo = "TtCcBbQq";
 		
@@ -111,15 +118,54 @@ public class Jogo {
 			peao.getJogadorResp().getPecasAtuais().set(indice, novaPeca);
 			tabuleiro.inserirPeca(novaPeca);
 		}
-		leitor.close();
+	}
+	
+	public void iniciarJogo() {
+		for (Jogador jogador : this.jogadores) {
+			this.posInicialPecas(jogador, this.tabuleiro);
+		}
+		this.setJogoAtivo(true);
+	}
+	
+	public void reiniciarJogo() {
+		for (int linha = 0; linha < 8; linha++) {
+			for (int coluna = 0; coluna < 8; coluna++) {
+				Posicao pos = new Posicao(Coluna.deIndice(coluna), Linha.deIndice(linha));
+				tabuleiro.removerPeca(pos);
+			}
+		}
+		for (Jogador jogador : this.jogadores) {
+			jogador.getPecasAtuais().clear();
+			jogador.getPecasCapturadas().clear();
+		}
+		this.iniciarJogo();
 	}
 	
 	//Método responsável por controlar o gameloop de cada um dos jogadores
 	public void rodarJogo() {
-		for (Jogador jogador : this.jogadores) {
-			this.posInicialPecas(jogador, this.tabuleiro);
-		}
-		this.tabuleiro.gerarTabuleiro();
-		this.movimento.realizarJogada(this.jogadores[0], this.tabuleiro, this.leitor);
+		this.iniciarJogo();
+		do {
+			this.tabuleiro.gerarTabuleiro();
+			for (Jogador jogador : this.jogadores) {
+				Jogada jogada;
+				do {
+					jogada = jogador.realizarJogada(jogador, tabuleiro);
+					if(!this.movimento.validarJogada(jogador, jogada)) continue;
+					break;
+				} while (true);
+				Peca pecaSelecionada = jogada.pecaSelecionada(this.tabuleiro);
+				Peca pecaCapturada = this.movimento.executarMovimento(pecaSelecionada, jogada.posInicio(), jogada.posDestino(), this.tabuleiro);
+				if(pecaCapturada != null) this.executarCaptura(pecaSelecionada, pecaCapturada);
+				if(this.validador.checarPromocao(pecaSelecionada)) this.promoverPeao(pecaSelecionada, this.tabuleiro);
+			}
+		} while (this.jogoAtivo);
+	}
+	
+	public boolean isJogoAtivo() {
+		return jogoAtivo;
+	}
+	
+	public void setJogoAtivo(boolean jogoAtivo) {
+		this.jogoAtivo = jogoAtivo;
 	}
 }

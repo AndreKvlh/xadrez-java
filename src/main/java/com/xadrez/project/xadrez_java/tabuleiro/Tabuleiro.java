@@ -35,7 +35,7 @@ public class Tabuleiro {
 	//Construtor que copia o tabuleiro a fim de testes virtuais
 	public Tabuleiro(Tabuleiro tabuleiro) {
 		//Copia os jogadores no estado atual
-		this.jogadores = new Jogador[] {new Jogador(tabuleiro.getJogadores()[0]), new Jogador(tabuleiro.getJogadores()[1])};
+		this.jogadores = new Jogador[] {tabuleiro.getJogadores()[0].copiar(), tabuleiro.getJogadores()[1].copiar()};
 
 		for (Jogador jogador : tabuleiro.getJogadores()) {
 			for (Peca pecaOriginal : jogador.getPecasAtuais()) {

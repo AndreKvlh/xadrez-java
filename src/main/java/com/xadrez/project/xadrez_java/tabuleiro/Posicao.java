@@ -23,4 +23,9 @@ public record Posicao(Coluna c, Linha l) {
 	public int[] getCoord() {
 		return new int[] {c.getIndice(), l.getIndice()};
 	}
+	
+	public String posicao() {
+		String pos = String.format("%c%c", c.simbolo(), l.simbolo());
+		return pos;
+	}
 }

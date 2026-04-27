@@ -2,32 +2,42 @@ package com.xadrez.project.xadrez_java.jogador;
 
 import java.util.ArrayList;
 
+import com.xadrez.project.xadrez_java.acoes.Jogada;
 import com.xadrez.project.xadrez_java.peca.Peca;
+import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
 
-public class Jogador {
+public abstract class Jogador {
 	//Variável que define qual jogador é
-	private int jogador;
+	protected int jogador;
 	
 	//Variável condicional que diz se o jogador está em xeque
-	private boolean xeque = false;
+	protected boolean xeque = false;
 	
 	//ArrayList que compila todas as peças que o jogador possui
-	private ArrayList<Peca> pecasAtuais = new ArrayList<>();
+	protected ArrayList<Peca> pecasAtuais = new ArrayList<>();
 	
 	//ArrayList que compila todas as peças capturadas do adversário;
-	private ArrayList<Peca> pecasCapturadas = new ArrayList<>();
+	protected ArrayList<Peca> pecasCapturadas = new ArrayList<>();
 	
 	public Jogador(int jogador) {
 		this.jogador = jogador;
+		this.pecasAtuais = new ArrayList<>();
+		this.pecasCapturadas = new ArrayList<>();
+		this.xeque = false;
 	}
 	
 	//Construtor de cópia de objeto
-	public Jogador(Jogador outro) {
+	/*public Jogador(Jogador outro) {
 		this.jogador = outro.jogador;
 		this.pecasAtuais = new ArrayList<>();
 		this.pecasCapturadas = new ArrayList<>();
 		this.xeque = outro.xeque;
-	}
+	}*/
+	
+	public abstract Jogador copiar();
+	
+	//Método que irá realizar a jogada, fazendo todas as verificações necessárias
+	public abstract Jogada realizarJogada(Jogador jogador, Tabuleiro tabuleiro); 
 
 	public int getJogador() {
 		return jogador;
