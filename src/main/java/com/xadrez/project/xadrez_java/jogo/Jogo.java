@@ -66,7 +66,7 @@ public class Jogo {
 				case 0, 7 -> new Torre(corPecasJogador, pos, jogador);
 				case 1, 6 -> new Cavalo(corPecasJogador, pos, jogador);
 				case 2, 5 -> new Bispo(corPecasJogador, pos, jogador);
-				case 3 -> new Rei(corPecasJogador, pos, jogador);
+				case 4 -> new Rei(corPecasJogador, pos, jogador);
 				default -> new Rainha(corPecasJogador, pos, jogador);
 			};
 			jogador.getPecasAtuais().add(peca);
@@ -141,22 +141,47 @@ public class Jogo {
 		this.iniciarJogo();
 	}
 	
+	public void darXequeMate(Jogador jogador) {
+		Jogador jogadorVenc = jogador.getJogador() == 0 ? this.jogadores[1] : this.jogadores[0];
+		System.out.printf("XEQUE-MATE, vitória do jogador %d", jogadorVenc.getJogador() + 1);
+		this.jogoAtivo = false;
+	}
+	
 	//Método responsável por controlar o gameloop de cada um dos jogadores
 	public void rodarJogo() {
 		this.iniciarJogo();
 		do {
 			this.tabuleiro.gerarTabuleiro();
 			for (Jogador jogador : this.jogadores) {
+				//Condições de vitória ou empate
+				//boolean fimDeJogo = !(this.validador.checarXequeMate(jogador, this.tabuleiro, this.movimento));
+				if(this.validador.checarXequeMate(jogador, this.tabuleiro, this.movimento)) {
+					this.darXequeMate(jogador);
+					break;
+				}
+				if(this.validador.checarAfogamento(jogador, this.tabuleiro, this.movimento)) {
+					System.out.printf("Jogador %d sem movimentos possiveis, empate por Afogamento (Stalemate)", jogador.getJogador() + 1);
+					this.jogoAtivo = false;
+					break;
+				}
+				
+				
 				Jogada jogada;
 				do {
-					jogada = jogador.realizarJogada(jogador, tabuleiro);
+					jogada = jogador.realizarJogada(tabuleiro);
+					if(jogada == null) {
+						this.darXequeMate(jogador);
+						break;
+					}
 					if(!this.movimento.validarJogada(jogador, jogada)) continue;
 					break;
 				} while (true);
-				Peca pecaSelecionada = jogada.pecaSelecionada(this.tabuleiro);
-				Peca pecaCapturada = this.movimento.executarMovimento(pecaSelecionada, jogada.posInicio(), jogada.posDestino(), this.tabuleiro);
-				if(pecaCapturada != null) this.executarCaptura(pecaSelecionada, pecaCapturada);
-				if(this.validador.checarPromocao(pecaSelecionada)) this.promoverPeao(pecaSelecionada, this.tabuleiro);
+				if (this.jogoAtivo) {
+					Peca pecaSelecionada = jogada.pecaSelecionada(this.tabuleiro);
+					Peca pecaCapturada = this.movimento.executarMovimento(pecaSelecionada, jogada.posInicio(), jogada.posDestino(), this.tabuleiro);
+					if(pecaCapturada != null) this.executarCaptura(pecaSelecionada, pecaCapturada);
+					if(this.validador.checarPromocao(pecaSelecionada)) this.promoverPeao(pecaSelecionada, this.tabuleiro);
+				}
 			}
 		} while (this.jogoAtivo);
 	}

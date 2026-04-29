@@ -1,5 +1,7 @@
 package com.xadrez.project.xadrez_java.regras;
 
+import com.xadrez.project.xadrez_java.acoes.Jogada;
+import com.xadrez.project.xadrez_java.acoes.Movimento;
 import com.xadrez.project.xadrez_java.jogador.Jogador;
 import com.xadrez.project.xadrez_java.peca.Peca;
 import com.xadrez.project.xadrez_java.peca.TipoPeca;
@@ -45,7 +47,7 @@ public class Validador {
 	//Checar se o rei está em posição de xeque
 	public boolean checarXeque (Jogador jogador, Tabuleiro tabuleiro) {
 		Peca reiJogador = null;
-		Jogador jogadorAdv = jogador.getJogador() == 0 ? tabuleiro.getJogadores()[1] : tabuleiro.getJogadores()[1];
+		Jogador jogadorAdv = jogador.getJogador() == 0 ? tabuleiro.getJogadores()[1] : tabuleiro.getJogadores()[0];
 		for(Peca peca : jogador.getPecasAtuais()) {
 			if (peca.getTipo().equals(TipoPeca.REI)) {
 				reiJogador = peca;
@@ -60,5 +62,32 @@ public class Validador {
 			}
 		}
 		return false;
+	}
+	
+	//Checar se há então xeque-mate
+	public boolean checarXequeMate(Jogador jogador, Tabuleiro tabuleiro, Movimento movimento) {
+		if (!this.checarXeque(jogador, tabuleiro)) return false;
+		
+		for(Peca peca : jogador.getPecasAtuais()) {
+			peca.calcularPossibilidades(tabuleiro);
+			for(Posicao posicao : peca.getPosDeMovimento()) {
+				Jogada jogada = new Jogada(peca.getPosicaoAtual().posicao(), posicao.posicao());
+				if(movimento.validarJogada(jogador, jogada)) return false;
+			}
+		}
+		return true;
+	}
+	
+	//Checar se jogo entrou em um stalemate
+	public boolean checarAfogamento(Jogador jogador, Tabuleiro tabuleiro, Movimento movimento) {
+		if (this.checarXeque(jogador, tabuleiro)) return false;
+		for(Peca peca : jogador.getPecasAtuais()) {
+			peca.calcularPossibilidades(tabuleiro);
+			for(Posicao posicao : peca.getPosDeMovimento()) {
+				Jogada jogada = new Jogada(peca.getPosicaoAtual().posicao(), posicao.posicao());
+				if(movimento.validarJogada(jogador, jogada)) return false;
+			}
+		}
+		return true;
 	}
 }

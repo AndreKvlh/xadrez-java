@@ -1,7 +1,9 @@
 package com.xadrez.project.xadrez_java.tabuleiro;
 
-import com.xadrez.project.xadrez_java.peca.Peca;
+import java.util.ArrayList;
+
 import com.xadrez.project.xadrez_java.jogador.Jogador;
+import com.xadrez.project.xadrez_java.peca.Peca;
 
 public class Tabuleiro {
 	//Matriz de controle das peças e movimentos;
@@ -126,5 +128,17 @@ public class Tabuleiro {
 	//Obter a informação dos jogadores atuais
 	public Jogador[] getJogadores() {
 		return this.jogadores;
+	}
+	
+	public ArrayList<Peca> getPecasNoTabuleiro() {
+		ArrayList<Peca> pecas = new ArrayList<>();
+		for (int linha = 0; linha < 8; linha++) {
+			for (int coluna = 0; coluna < 8; coluna++) {
+				if (this.getPecaNoTabuleiro(linha, coluna) == null) continue;
+				Peca peca = this.getPecaNoTabuleiro(linha, coluna);
+				pecas.add(peca);
+			}
+		}
+		return pecas;
 	}
 }

@@ -37,7 +37,7 @@ public abstract class Jogador {
 	public abstract Jogador copiar();
 	
 	//Método que irá realizar a jogada, fazendo todas as verificações necessárias
-	public abstract Jogada realizarJogada(Jogador jogador, Tabuleiro tabuleiro); 
+	public abstract Jogada realizarJogada(Tabuleiro tabuleiro); 
 
 	public int getJogador() {
 		return jogador;

@@ -18,7 +18,7 @@ public class JogadorHumano extends Jogador {
 	}
 	
 	@Override
-	public Jogada realizarJogada(Jogador jogador, Tabuleiro tabuleiro) {
+	public Jogada realizarJogada(Tabuleiro tabuleiro) {
 		//Atributos para obtenção das informações da jogada
 		String inicio, destino;
 		
