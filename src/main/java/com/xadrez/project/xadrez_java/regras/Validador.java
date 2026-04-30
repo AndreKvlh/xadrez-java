@@ -97,6 +97,8 @@ public class Validador {
 	}
 	
 	//Checar se há peças suficientes para continuar o jogo
+	//TO DO: possivelmente isso gere um bug caso o jogador tenha só o rei mas o outro ainda
+	//tenha peças suficientes. Vou pensar nisso a posteriori
 	public boolean checarPecasInsuficientes(Jogador jogador, Tabuleiro tabuleiro, Movimento movimento) {
 		if (this.checarXeque(jogador, tabuleiro)) return false;
 		ArrayList<Peca> pecasRestantes = new ArrayList<>();

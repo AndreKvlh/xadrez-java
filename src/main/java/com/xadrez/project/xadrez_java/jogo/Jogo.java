@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import com.xadrez.project.xadrez_java.acoes.Jogada;
 import com.xadrez.project.xadrez_java.acoes.Movimento;
+import com.xadrez.project.xadrez_java.historico.Historico;
 import com.xadrez.project.xadrez_java.jogador.Jogador;
 import com.xadrez.project.xadrez_java.jogador.JogadorHumano;
 import com.xadrez.project.xadrez_java.jogador.JogadorIA;
@@ -27,9 +28,13 @@ public class Jogo {
 	private final Movimento movimento;
 	private final Validador validador;
 	private final Scanner leitor;
+	private final Historico historico;
 	
 	//Atributo que controla o estado do jogo
 	private boolean jogoAtivo;
+	
+	//Atributo que controla o turno atual do jogo
+	private int turno = 1;
 	
 	public Jogo() {
 		this.validador = new Validador();
@@ -38,6 +43,7 @@ public class Jogo {
 		this.tabuleiro = new Tabuleiro(this.jogadores[0],this.jogadores[1]);
 		this.movimento = new Movimento(this.tabuleiro);
 		this.jogoAtivo = false;
+		this.historico = new Historico();
 	}
 	
 	//Método que irá inicializar o tabuleiro de cada jogador, atribuindo 
@@ -185,6 +191,10 @@ public class Jogo {
 					Peca pecaCapturada = this.movimento.executarMovimento(pecaSelecionada, jogada.posInicio(), jogada.posDestino(), this.tabuleiro);
 					if(pecaCapturada != null) this.executarCaptura(pecaSelecionada, pecaCapturada);
 					if(this.validador.checarPromocao(pecaSelecionada)) this.promoverPeao(pecaSelecionada, this.tabuleiro);
+					this.turno++;
+					
+					//Salvar turno no histórico
+					this.historico.salvarTurno(this.turno, this.tabuleiro, jogador, pecaSelecionada, jogada);
 				}
 			}
 		} while (this.jogoAtivo);

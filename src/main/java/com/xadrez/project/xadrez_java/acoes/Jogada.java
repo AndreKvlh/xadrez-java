@@ -16,4 +16,8 @@ public record Jogada(String inicio, String destino) {
 	public Posicao posDestino() {
 		return Posicao.converterStringEmPos(destino);
 	}
+	
+	public Jogada copiar() {
+		return new Jogada(this.inicio,this.destino);
+	}
 }
