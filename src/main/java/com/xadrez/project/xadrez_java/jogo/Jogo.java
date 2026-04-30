@@ -154,13 +154,17 @@ public class Jogo {
 			this.tabuleiro.gerarTabuleiro();
 			for (Jogador jogador : this.jogadores) {
 				//Condições de vitória ou empate
-				//boolean fimDeJogo = !(this.validador.checarXequeMate(jogador, this.tabuleiro, this.movimento));
 				if(this.validador.checarXequeMate(jogador, this.tabuleiro, this.movimento)) {
 					this.darXequeMate(jogador);
 					break;
 				}
 				if(this.validador.checarAfogamento(jogador, this.tabuleiro, this.movimento)) {
 					System.out.printf("Jogador %d sem movimentos possiveis, empate por Afogamento (Stalemate)", jogador.getJogador() + 1);
+					this.jogoAtivo = false;
+					break;
+				}
+				if(this.validador.checarPecasInsuficientes(jogador, this.tabuleiro, this.movimento)) {
+					System.out.println("Empate devido a insuficiência de peças.");
 					this.jogoAtivo = false;
 					break;
 				}

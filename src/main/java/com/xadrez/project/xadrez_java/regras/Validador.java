@@ -1,11 +1,16 @@
 package com.xadrez.project.xadrez_java.regras;
 
+import java.util.ArrayList;
+
 import com.xadrez.project.xadrez_java.acoes.Jogada;
 import com.xadrez.project.xadrez_java.acoes.Movimento;
 import com.xadrez.project.xadrez_java.jogador.Jogador;
 import com.xadrez.project.xadrez_java.peca.Peca;
 import com.xadrez.project.xadrez_java.peca.TipoPeca;
+import com.xadrez.project.xadrez_java.peca.bispo.Bispo;
+import com.xadrez.project.xadrez_java.peca.cavalo.Cavalo;
 import com.xadrez.project.xadrez_java.peca.peao.Peao;
+import com.xadrez.project.xadrez_java.peca.rei.Rei;
 import com.xadrez.project.xadrez_java.tabuleiro.Posicao;
 import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
 
@@ -89,5 +94,23 @@ public class Validador {
 			}
 		}
 		return true;
+	}
+	
+	//Checar se há peças suficientes para continuar o jogo
+	public boolean checarPecasInsuficientes(Jogador jogador, Tabuleiro tabuleiro, Movimento movimento) {
+		if (this.checarXeque(jogador, tabuleiro)) return false;
+		ArrayList<Peca> pecasRestantes = new ArrayList<>();
+		
+		for(Peca peca : jogador.getPecasAtuais()) {
+			if(!(peca instanceof Rei)) pecasRestantes.add(peca);	
+		}
+		
+		if(pecasRestantes.size() == 0) return true;
+		
+		if(pecasRestantes.size() == 1) {
+			Peca peca = pecasRestantes.get(0);
+			return (peca instanceof Bispo || peca instanceof Cavalo);
+		}
+		return false;
 	}
 }

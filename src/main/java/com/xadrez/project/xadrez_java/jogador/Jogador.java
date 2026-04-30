@@ -55,6 +55,10 @@ public abstract class Jogador {
 		this.pecasAtuais = pecasAtuais;
 	}
 	
+	public void setPeca(Peca peca) {
+		this.pecasAtuais.add(peca);
+	}
+	
 	public ArrayList<Peca> getPecasCapturadas() {
 		return pecasCapturadas;
 	}
