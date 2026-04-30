@@ -1,9 +1,13 @@
 package com.xadrez.project.xadrez_java.regras;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.xadrez.project.xadrez_java.acoes.Jogada;
 import com.xadrez.project.xadrez_java.acoes.Movimento;
+import com.xadrez.project.xadrez_java.historico.Historico;
+import com.xadrez.project.xadrez_java.historico.Turno;
 import com.xadrez.project.xadrez_java.jogador.Jogador;
 import com.xadrez.project.xadrez_java.peca.Peca;
 import com.xadrez.project.xadrez_java.peca.TipoPeca;
@@ -114,5 +118,38 @@ public class Validador {
 			return (peca instanceof Bispo || peca instanceof Cavalo);
 		}
 		return false;
+	}
+	
+	//Checar se os últimos movimentos foram repetidos. É necessário que haja repetição das
+	//três últimas jogadas a fim de atestar empate
+	public boolean checarRepeticao(Jogador jogador, Tabuleiro tabuleiro, Historico historico) {
+		Turno[] ultimosTurnos = historico.getUltimosSeisTurnos();
+		
+		if(ultimosTurnos.length < 6) return false;
+		System.out.println("Tem no minimo seis turnos");
+		
+		Set<TipoPeca> pecasJ1 = new HashSet<>();
+		Set<TipoPeca> pecasJ2 = new HashSet<>();
+		
+		Set<String> jogadasJ1 = new HashSet<>();
+		Set<String> jogadasJ2 = new HashSet<>();
+		
+		for(int i = 0; i < ultimosTurnos.length; i++) {
+			if(i % 2 == 0) {
+				pecasJ1.add(ultimosTurnos[i].peca().getTipo());
+				jogadasJ1.add(ultimosTurnos[i].jogada().inicio());
+				jogadasJ1.add(ultimosTurnos[i].jogada().destino());
+			} else {
+				pecasJ2.add(ultimosTurnos[i].peca().getTipo());
+				jogadasJ2.add(ultimosTurnos[i].jogada().inicio());
+				jogadasJ2.add(ultimosTurnos[i].jogada().destino());
+			}
+		}
+		
+		if(pecasJ1.size() < 1 || pecasJ2.size() < 1) return false;
+		
+		if(jogadasJ1.size() < 2 || jogadasJ2.size() < 2) return false;
+		
+		return true;
 	}
 }

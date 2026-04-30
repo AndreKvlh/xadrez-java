@@ -45,12 +45,12 @@ public class Historico {
 		return this.historico.getLast();
 	}
 	
-	public Turno[] getUltimosTresTurnos() {
-		Turno[] ultimosTurnos = new Turno[3];
-		for(int i = 1; i <= 3; i++) {
+	public Turno[] getUltimosSeisTurnos() {
+		Turno[] ultimosTurnos = new Turno[6];
+		for(int i = 0; i <= 5; i++) {
 			if(this.historico.size() - i < 0) break;
 			int ultimoTurno = this.historico.size() - i; 
-			ultimosTurnos[i - 1] = this.getTurno(ultimoTurno);
+			ultimosTurnos[i] = this.getTurno(ultimoTurno);
 		}
 		return ultimosTurnos;
 	}
