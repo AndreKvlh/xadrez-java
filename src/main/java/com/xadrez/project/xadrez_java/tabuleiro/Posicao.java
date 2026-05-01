@@ -28,4 +28,12 @@ public record Posicao(Coluna c, Linha l) {
 		String pos = String.format("%c%c", c.simbolo(), l.simbolo());
 		return pos;
 	}
+	
+	public int x() {
+		return c.getIndice();
+	}
+	
+	public int y() {
+		return l.getIndice();
+	}
 }

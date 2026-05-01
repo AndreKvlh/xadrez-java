@@ -2,7 +2,10 @@ package com.xadrez.project.xadrez_java.acoes;
 
 import com.xadrez.project.xadrez_java.jogador.Jogador;
 import com.xadrez.project.xadrez_java.peca.Peca;
+import com.xadrez.project.xadrez_java.peca.torre.Torre;
 import com.xadrez.project.xadrez_java.regras.Validador;
+import com.xadrez.project.xadrez_java.tabuleiro.Coluna;
+import com.xadrez.project.xadrez_java.tabuleiro.Linha;
 import com.xadrez.project.xadrez_java.tabuleiro.Posicao;
 import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
 
@@ -15,12 +18,34 @@ public class Movimento {
 		this.tabuleiro = tabuleiro;
 	}
 	
+	//Executa o movimento de roque
+	public void executarRoque(Peca peca, Posicao posAntiga, Tabuleiro tabuleiro) {
+		int dx = peca.getPosicaoAtual().x() - posAntiga.x();
+		Linha linhaRei = peca.getPosicaoAtual().l();
+		
+		Peca torre = null;
+		Posicao novaPosTorre;
+		if (dx > 0) {
+			torre = tabuleiro.getPeca(new Posicao(Coluna.H,linhaRei));
+			novaPosTorre = new Posicao(Coluna.F,linhaRei);
+		}
+		else {
+			torre = tabuleiro.getPeca(new Posicao(Coluna.A,linhaRei));
+			novaPosTorre = new Posicao(Coluna.D,linhaRei);
+		}
+		
+		if (!(torre instanceof Torre)) return;
+		
+		this.executarMovimento(torre, torre.getPosicaoAtual(), novaPosTorre, tabuleiro);
+	}
+	
 	//Executar o movimento da peça
 	public Peca executarMovimento(Peca peca, Posicao posAntiga, Posicao posNova, Tabuleiro tabuleiro) {
 		Peca pecaInimiga = this.tabuleiro.getPeca(posNova);
 		peca.setPosicaoAtual(posNova);
 		tabuleiro.inserirPeca(peca);
 		tabuleiro.removerPeca(posAntiga);
+		if(this.validador.checarRoque(peca, posAntiga, posNova)) this.executarRoque(peca, posAntiga, tabuleiro);
 		if(peca.isPosInicial()) peca.setPosInicial(false);
 		if(pecaInimiga != null) {
 			return pecaInimiga;

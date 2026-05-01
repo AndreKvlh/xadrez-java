@@ -174,11 +174,11 @@ public class Jogo {
 					this.jogoAtivo = false;
 					break;
 				}
-				if(this.validador.checarRepeticao(jogador, this.tabuleiro, this.historico)) {
+				/*if(this.validador.checarRepeticao(jogador, this.tabuleiro, this.historico)) {
 					System.out.println("Empate devido a repetição de movimento.");
 					this.jogoAtivo = false;
 					break;
-				}
+				}*/
 				
 				
 				Jogada jogada;

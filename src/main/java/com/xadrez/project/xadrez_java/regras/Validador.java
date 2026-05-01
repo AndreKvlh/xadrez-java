@@ -124,9 +124,8 @@ public class Validador {
 	//três últimas jogadas a fim de atestar empate
 	public boolean checarRepeticao(Jogador jogador, Tabuleiro tabuleiro, Historico historico) {
 		Turno[] ultimosTurnos = historico.getUltimosSeisTurnos();
-		
-		if(ultimosTurnos.length < 6) return false;
-		System.out.println("Tem no minimo seis turnos");
+	
+		if(ultimosTurnos.length < 6 || ultimosTurnos[5] == null) return false;
 		
 		Set<TipoPeca> pecasJ1 = new HashSet<>();
 		Set<TipoPeca> pecasJ2 = new HashSet<>();
@@ -150,6 +149,13 @@ public class Validador {
 		
 		if(jogadasJ1.size() < 2 || jogadasJ2.size() < 2) return false;
 		
+		return true;
+	}
+	
+	//Checar se o movimento em questão é de roque
+	public boolean checarRoque(Peca peca, Posicao posAntiga, Posicao posNova) {
+		if (!(peca instanceof Rei)) return false;
+		if(Math.abs(posAntiga.x() - posNova.x()) != 2) return false;
 		return true;
 	}
 }

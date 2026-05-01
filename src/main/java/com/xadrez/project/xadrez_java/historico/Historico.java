@@ -45,6 +45,7 @@ public class Historico {
 		return this.historico.getLast();
 	}
 	
+	//TO DO: Trocar array por ArrayList
 	public Turno[] getUltimosSeisTurnos() {
 		Turno[] ultimosTurnos = new Turno[6];
 		for(int i = 0; i <= 5; i++) {
