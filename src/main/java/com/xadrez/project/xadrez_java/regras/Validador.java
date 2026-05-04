@@ -15,6 +15,8 @@ import com.xadrez.project.xadrez_java.peca.bispo.Bispo;
 import com.xadrez.project.xadrez_java.peca.cavalo.Cavalo;
 import com.xadrez.project.xadrez_java.peca.peao.Peao;
 import com.xadrez.project.xadrez_java.peca.rei.Rei;
+import com.xadrez.project.xadrez_java.tabuleiro.Coluna;
+import com.xadrez.project.xadrez_java.tabuleiro.Linha;
 import com.xadrez.project.xadrez_java.tabuleiro.Posicao;
 import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
 
@@ -125,7 +127,7 @@ public class Validador {
 	public boolean checarRepeticao(Jogador jogador, Tabuleiro tabuleiro, Historico historico) {
 		Turno[] ultimosTurnos = historico.getUltimosSeisTurnos();
 	
-		if(ultimosTurnos.length < 6 || ultimosTurnos[5] == null) return false;
+		if(ultimosTurnos[5] == null) return false;
 		
 		Set<TipoPeca> pecasJ1 = new HashSet<>();
 		Set<TipoPeca> pecasJ2 = new HashSet<>();
@@ -145,17 +147,59 @@ public class Validador {
 			}
 		}
 		
-		if(pecasJ1.size() < 1 || pecasJ2.size() < 1) return false;
+		if(pecasJ1.size() > 1 || pecasJ2.size() > 1) return false;
 		
-		if(jogadasJ1.size() < 2 || jogadasJ2.size() < 2) return false;
+		if(jogadasJ1.size() > 2 || jogadasJ2.size() > 2) return false;
 		
 		return true;
 	}
 	
 	//Checar se o movimento em questão é de roque
 	public boolean checarRoque(Peca peca, Posicao posAntiga, Posicao posNova) {
-		if (!(peca instanceof Rei)) return false;
+		if(!(peca instanceof Rei)) return false;
+		if(!peca.isPosInicial()) return false;
 		if(Math.abs(posAntiga.x() - posNova.x()) != 2) return false;
 		return true;
 	}
-}
+	
+	//Checar se é possível realizar o En Passant
+	public boolean checarEnPassant(Peca peca, Tabuleiro tabuleiro, Historico historico) {
+		if (!(peca instanceof Peao)) return false;
+		
+		int x = peca.getPosicaoAtual().x();
+		int y = peca.getPosicaoAtual().y();
+		
+		//Gambiarra desgraçada. Quando refatorar arruma isso aqui meu
+		Peca[] pecasLaterais = {null, null};
+		int dir = -3;
+		
+		for(Peca pecaAtual : pecasLaterais) {
+			dir += 2;
+			try {
+				pecaAtual = tabuleiro.getPeca(new Posicao(Coluna.deIndice(x + dir), Linha.deIndice(y)));
+			} catch (IllegalArgumentException e){
+				continue;
+			}
+		}
+		//Verificação das laterais do peão
+		if (pecasLaterais[0] == null && pecasLaterais[1] == null) return false;
+		
+		if (!(pecasLaterais[0] instanceof Peao) && !(pecasLaterais[1] instanceof Peao)) return false;
+		
+		//Coleta do último turno
+		Turno ultimoTurno = historico.getUltimoTurno();
+		
+		if(!(ultimoTurno.peca() instanceof Peao)) return false;
+		
+		Posicao posInicioTurno = ultimoTurno.jogada().posInicio();
+		Posicao posDestinoTurno = ultimoTurno.jogada().posDestino();
+		
+		if(!posDestinoTurno.posicao().equals(pecasLaterais[0].getPosicaoAtual().posicao())
+		&& !posDestinoTurno.posicao().equals(pecasLaterais[1].getPosicaoAtual().posicao())) return false;
+		
+		//Caso seja identificado, iremos ver se houve passo duplo
+		if(Math.abs(posInicioTurno.y() - posDestinoTurno.y()) != 2) return false;
+		
+		return true;
+	}
+ }

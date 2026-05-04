@@ -174,11 +174,11 @@ public class Jogo {
 					this.jogoAtivo = false;
 					break;
 				}
-				/*if(this.validador.checarRepeticao(jogador, this.tabuleiro, this.historico)) {
+				if(this.validador.checarRepeticao(jogador, this.tabuleiro, this.historico)) {
 					System.out.println("Empate devido a repetição de movimento.");
 					this.jogoAtivo = false;
 					break;
-				}*/
+				}
 				
 				
 				Jogada jogada;
@@ -193,13 +193,14 @@ public class Jogo {
 				} while (true);
 				if (this.jogoAtivo) {
 					Peca pecaSelecionada = jogada.pecaSelecionada(this.tabuleiro);
+					
+					//Salvar turno no histórico
+					this.historico.salvarTurno(this.turno, this.tabuleiro, jogador, pecaSelecionada, jogada);
+					
 					Peca pecaCapturada = this.movimento.executarMovimento(pecaSelecionada, jogada.posInicio(), jogada.posDestino(), this.tabuleiro);
 					if(pecaCapturada != null) this.executarCaptura(pecaSelecionada, pecaCapturada);
 					if(this.validador.checarPromocao(pecaSelecionada)) this.promoverPeao(pecaSelecionada, this.tabuleiro);
 					this.turno++;
-					
-					//Salvar turno no histórico
-					this.historico.salvarTurno(this.turno, this.tabuleiro, jogador, pecaSelecionada, jogada);
 				}
 			}
 		} while (this.jogoAtivo);

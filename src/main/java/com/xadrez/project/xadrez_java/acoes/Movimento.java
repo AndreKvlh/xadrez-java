@@ -22,6 +22,7 @@ public class Movimento {
 	public void executarRoque(Peca peca, Posicao posAntiga, Tabuleiro tabuleiro) {
 		int dx = peca.getPosicaoAtual().x() - posAntiga.x();
 		Linha linhaRei = peca.getPosicaoAtual().l();
+		if(peca.isPosInicial()) peca.setPosInicial(false);
 		
 		Peca torre = null;
 		Posicao novaPosTorre;
@@ -35,7 +36,6 @@ public class Movimento {
 		}
 		
 		if (!(torre instanceof Torre)) return;
-		
 		this.executarMovimento(torre, torre.getPosicaoAtual(), novaPosTorre, tabuleiro);
 	}
 	
@@ -47,7 +47,7 @@ public class Movimento {
 		tabuleiro.removerPeca(posAntiga);
 		if(this.validador.checarRoque(peca, posAntiga, posNova)) this.executarRoque(peca, posAntiga, tabuleiro);
 		if(peca.isPosInicial()) peca.setPosInicial(false);
-		if(pecaInimiga != null) {
+		if(pecaInimiga != null) {	
 			return pecaInimiga;
 		}
 		return null;

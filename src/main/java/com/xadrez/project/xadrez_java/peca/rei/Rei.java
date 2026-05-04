@@ -21,8 +21,9 @@ public class Rei extends Peca {
 
 	@Override
 	public boolean validarMovimento(Posicao posNova, Tabuleiro tabuleiro) {
+		System.out.println(this.posInicial);
 		this.calcularPossibilidades(tabuleiro);
-		this.calcularRoque(tabuleiro);
+		if(this.isPosInicial()) this.calcularRoque(tabuleiro);
 		if (!this.getPosDeMovimento().contains(posNova)) {
 			System.out.println("Movimento inválido! Tente novamente");
 			return false;
@@ -36,8 +37,6 @@ public class Rei extends Peca {
 	}
 	
 	public void calcularRoque(Tabuleiro tabuleiro) {
-		if (!this.posInicial) return;
-		
 		boolean roqueDireito = false, roqueEsquerdo = false;
 		
 		ArrayList<Peca> torres = new ArrayList<>();
