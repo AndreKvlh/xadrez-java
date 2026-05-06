@@ -89,6 +89,8 @@ public class Jogo {
 		
 		jogadorAdv.getPecasAtuais().remove(pecaAdv);
 		jogadorAtual.getPecasCapturadas().add(pecaAdv);
+		
+		this.tabuleiro.removerPeca(pecaAdv.getPosicaoAtual());
 	}
 	
 	//Método responsável por promover o peão quando este chegar ao fim do tabuleiro
@@ -159,7 +161,7 @@ public class Jogo {
 		do {
 			this.tabuleiro.gerarTabuleiro();
 			for (Jogador jogador : this.jogadores) {
-				if (jogador instanceof JogadorIA) continue;
+				//if (jogador instanceof JogadorIA) continue;
 				//Condições de vitória ou empate
 				if(this.validador.checarXequeMate(jogador, this.tabuleiro, this.movimento)) {
 					this.darXequeMate(jogador);

@@ -4,7 +4,6 @@ import com.xadrez.project.xadrez_java.historico.Historico;
 import com.xadrez.project.xadrez_java.jogador.Jogador;
 import com.xadrez.project.xadrez_java.peca.CorPeca;
 import com.xadrez.project.xadrez_java.peca.Peca;
-import com.xadrez.project.xadrez_java.peca.peao.Peao;
 import com.xadrez.project.xadrez_java.peca.torre.Torre;
 import com.xadrez.project.xadrez_java.regras.Validador;
 import com.xadrez.project.xadrez_java.tabuleiro.Coluna;
@@ -63,9 +62,8 @@ public class Movimento {
 	public Peca executarMovimento(Peca peca, Posicao posAntiga, Posicao posNova, Tabuleiro tabuleiro) {
 		Peca pecaInimiga = null;
 		if(this.validador.checarEnPassant(peca, this.tabuleiro, this.historico)) {
-			int indiceLinNova = posNova.l().getIndice();
-			int indiceLinAntiga = posAntiga.l().getIndice();
-			Posicao posCaptura = indiceLinNova > indiceLinAntiga ? new Posicao(posNova.c(), Linha.deIndice(indiceLinNova - 1)) : new Posicao(posNova.c(), Linha.deIndice(indiceLinNova + 1));
+			System.out.println("En passant");
+			Posicao posCaptura = new Posicao(posNova.c(), posAntiga.l());
 			pecaInimiga = this.tabuleiro.getPeca(posCaptura);
 		} else {
 			pecaInimiga = this.tabuleiro.getPeca(posNova);
@@ -83,7 +81,6 @@ public class Movimento {
 		if(!this.validador.checarOutOfBounds(jogada.inicio())) return false;
 		Posicao posAntiga = jogada.posInicio();
 		Posicao posNova = jogada.posDestino();
-		//System.out.printf("%d,%d", posNova.x(), posNova.y());
 		
 		Tabuleiro tabVirtual = new Tabuleiro(this.tabuleiro);
 		Jogador jgVirtual = jogador.getJogador() == 0 ? tabVirtual.getJogadores()[0] : tabVirtual.getJogadores()[1];
@@ -93,10 +90,6 @@ public class Movimento {
 		if(!pecaJogada.validarMovimento(posNova, tabVirtual, this.validador.checarEnPassant(pecaJogada, tabVirtual, this.historico))) return false;
 		this.executarMovimento(pecaJogada, posAntiga, posNova, tabVirtual);
 		
-		/*if (this.validador.checarXeque(jgVirtual, tabVirtual)) {
-			System.out.println("Posição te deixará/manterá em xeque, selecione outra");
-			return false;
-		}*/
 		return true;
 	}
 }

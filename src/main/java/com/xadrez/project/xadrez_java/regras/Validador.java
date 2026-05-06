@@ -171,48 +171,36 @@ public class Validador {
 		
 		int x = peca.getPosicaoAtual().x();
 		int y = peca.getPosicaoAtual().y();
-		System.out.printf("%d,%d A", x, y);
-		//Busca pelas peças na lateral do peão
+		
 		List<Peca> pecasLaterais = new ArrayList<>();
 		for (int i = -1; i < 2; i++) {
 			if (i == 0) continue;
 			try {
 				Peca pecaAtual = tabuleiro.getPeca(new Posicao(Coluna.deIndice(x + i), Linha.deIndice(y)));
-				
-				System.out.println(pecaAtual.getPosicaoAtual().x());
 				if(pecaAtual != null) pecasLaterais.add(pecaAtual);
 			} catch (IllegalArgumentException e){
 				continue;
 			}
 		}
-		System.out.println(pecasLaterais.size());
 		
 		//Verificação das laterais do peão
-		if (pecasLaterais.size() < 2) return false;
+		if (pecasLaterais.stream().allMatch(p -> p == null)) return false;
 		
-		if (pecasLaterais.get(0) == null && pecasLaterais.get(1) == null) return false;
-		System.out.println("Há ao menos uma peça na lateral");
-		
-		if (!(pecasLaterais.get(0) instanceof Peao) && !(pecasLaterais.get(1) instanceof Peao)) return false;
-		System.out.println("Há ao menos um peão na lateral");
+		if (pecasLaterais.stream().allMatch(p -> !(p instanceof Peao))) return false;
 		
 		//Coleta do último turno
 		Turno ultimoTurno = historico.getUltimoTurno();
 		
 		if(!(ultimoTurno.peca() instanceof Peao)) return false;
 		if(ultimoTurno.peca().getCor().equals(peca.getCor())) return false;
-		System.out.println("O último turno foi movimento de um peão");
 		
 		Posicao posInicioTurno = ultimoTurno.jogada().posInicio();
 		Posicao posDestinoTurno = ultimoTurno.jogada().posDestino();
 		
-		if(!posDestinoTurno.posicao().equals(pecasLaterais.get(0).getPosicaoAtual().posicao())
-		&& !posDestinoTurno.posicao().equals(pecasLaterais.get(1).getPosicaoAtual().posicao())) return false;
-		System.out.println("O peão do último turno é o mesmo que está ao lado");
+		if(pecasLaterais.stream().allMatch(p -> !posDestinoTurno.posicao().equals(p.getPosicaoAtual().posicao()))) return false;
 		
 		//Caso seja identificado, iremos ver se houve passo duplo
 		if(Math.abs(posInicioTurno.y() - posDestinoTurno.y()) != 2) return false;
-		System.out.println("O peão se moveu duas casas");
 		
 		return true;
 	}

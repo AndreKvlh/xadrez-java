@@ -65,7 +65,6 @@ public class Peao extends Peca{
 	}
 	
 	public void liberarEnPassant(Posicao posicao) {
-		System.out.println("En Passant permitido!");
 		int dx = this.posicaoAtual.x() < posicao.x() ? 1 : -1;
 		int dy = this.posicaoAtual.y() < posicao.y() ? 1 : -1;
 		

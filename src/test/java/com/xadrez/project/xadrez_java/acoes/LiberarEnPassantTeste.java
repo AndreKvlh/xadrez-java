@@ -73,7 +73,6 @@ public class LiberarEnPassantTeste {
 		historico.salvarTurno(1, this.tabuleiro, this.jogador2, peaoP, ultimaJogada);
 		
 		Jogada enPassant = new Jogada("E5", "D6");
-		
 		//Checar se jogada em questão é possível. Movimento tem que retornar verdadeiro
 		//por ser um movimento de en passant
 		assertNotNull(this.movimento.executarMovimento(this.peaoB, enPassant.posInicio(), enPassant.posDestino(), this.tabuleiro));
