@@ -21,6 +21,17 @@ public class Peao extends Peca{
 	}
 
 	@Override
+	public boolean validarMovimento(Posicao posNova, Tabuleiro tabuleiro, boolean enPassant) {
+		this.calcularPossibilidades(tabuleiro);
+		if (enPassant) this.liberarEnPassant(posNova);
+		if (!this.getPosDeMovimento().contains(posNova)) {
+			System.out.println("Movimento inválido! Tente novamente");
+			return false;
+		}
+		return true;
+	}
+	
+	@Override
 	public void calcularPossibilidades(Tabuleiro tabuleiro) {
 		if(!getPosDeMovimento().isEmpty()) getPosDeMovimento().clear();
 		int[] coord = this.posicaoAtual.getCoord();
@@ -51,5 +62,18 @@ public class Peao extends Peca{
 	@Override
 	public Peca copiar() {
 		return new Peao(this.cor, this.posicaoAtual, this.jogadorResp);
+	}
+	
+	public void liberarEnPassant(Posicao posicao) {
+		System.out.println("En Passant permitido!");
+		int dx = this.posicaoAtual.x() < posicao.x() ? 1 : -1;
+		int dy = this.posicaoAtual.y() < posicao.y() ? 1 : -1;
+		
+		for(int[] direcao : direcoesAtaque) {
+			if (dx == direcao[0] && dy == direcao[1]) {
+				this.posDeMovimento.add(posicao);
+				break;
+			}
+		}
 	}
 }	

@@ -27,7 +27,7 @@ public class JogadorIA extends Jogador{
 	public Jogada realizarJogada(Tabuleiro tabuleiro) {
 		//Atributos para obtenção das informações da jogada
 		String inicio, destino;
-		this.movimento = new Movimento(tabuleiro);
+		this.movimento = new Movimento(tabuleiro, null);
 		inicio = this.computador.selecionarPeca(getPecasAtuais(), tabuleiro, this.validador, this.movimento);
 		if (inicio.isEmpty()) return null;
 		

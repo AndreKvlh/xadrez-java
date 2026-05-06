@@ -34,7 +34,7 @@ public class PecasInsuficientesTeste {
 		this.jogador2 = new JogadorIA(1);
 		this.tabuleiro = new Tabuleiro(jogador1, jogador2);
 		this.validador = new Validador();
-		this.movimento = new Movimento(this.tabuleiro);
+		this.movimento = new Movimento(this.tabuleiro, null);
 		this.reiB = new Rei(CorPeca.BRANCA, new Posicao(Coluna.E,Linha.L1), jogador1);
 		this.reiP = new Rei(CorPeca.PRETA, new Posicao(Coluna.E,Linha.L8), jogador2);
 		this.tabuleiro.inserirPeca(reiB);

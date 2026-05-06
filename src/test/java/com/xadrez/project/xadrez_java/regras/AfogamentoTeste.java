@@ -31,7 +31,7 @@ public class AfogamentoTeste {
 		
 		//Criação das regras para validação e movimento
 		Validador validador = new Validador();
-		Movimento movimento = new Movimento(tabuleiro);
+		Movimento movimento = new Movimento(tabuleiro, null);
 		
 		//Peças brancas
 		Peca reiB = new Rei(CorPeca.BRANCA, new Posicao(Coluna.A,Linha.L8), jogador1);

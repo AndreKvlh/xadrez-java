@@ -41,9 +41,9 @@ public class Jogo {
 		this.leitor = new Scanner(System.in);
 		this.jogadores = new Jogador[] {new JogadorHumano(0, this.leitor), new JogadorIA(1)};
 		this.tabuleiro = new Tabuleiro(this.jogadores[0],this.jogadores[1]);
-		this.movimento = new Movimento(this.tabuleiro);
 		this.jogoAtivo = false;
 		this.historico = new Historico();
+		this.movimento = new Movimento(this.tabuleiro, this.historico);
 	}
 	
 	//Método que irá inicializar o tabuleiro de cada jogador, atribuindo 
@@ -159,6 +159,7 @@ public class Jogo {
 		do {
 			this.tabuleiro.gerarTabuleiro();
 			for (Jogador jogador : this.jogadores) {
+				if (jogador instanceof JogadorIA) continue;
 				//Condições de vitória ou empate
 				if(this.validador.checarXequeMate(jogador, this.tabuleiro, this.movimento)) {
 					this.darXequeMate(jogador);
@@ -193,13 +194,15 @@ public class Jogo {
 				} while (true);
 				if (this.jogoAtivo) {
 					Peca pecaSelecionada = jogada.pecaSelecionada(this.tabuleiro);
+					Peca pecaCapturada = this.movimento.executarMovimento(pecaSelecionada, jogada.posInicio(), jogada.posDestino(), this.tabuleiro);
+					if(pecaCapturada != null) this.executarCaptura(pecaSelecionada, pecaCapturada);
+					if(this.validador.checarPromocao(pecaSelecionada)) this.promoverPeao(pecaSelecionada, this.tabuleiro);
 					
 					//Salvar turno no histórico
 					this.historico.salvarTurno(this.turno, this.tabuleiro, jogador, pecaSelecionada, jogada);
 					
-					Peca pecaCapturada = this.movimento.executarMovimento(pecaSelecionada, jogada.posInicio(), jogada.posDestino(), this.tabuleiro);
-					if(pecaCapturada != null) this.executarCaptura(pecaSelecionada, pecaCapturada);
-					if(this.validador.checarPromocao(pecaSelecionada)) this.promoverPeao(pecaSelecionada, this.tabuleiro);
+					if(pecaSelecionada.isPosInicial()) pecaSelecionada.setPosInicial(false);
+						
 					this.turno++;
 				}
 			}

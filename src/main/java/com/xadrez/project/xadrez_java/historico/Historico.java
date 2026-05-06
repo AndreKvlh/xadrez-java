@@ -2,6 +2,7 @@ package com.xadrez.project.xadrez_java.historico;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import com.xadrez.project.xadrez_java.acoes.Jogada;
 import com.xadrez.project.xadrez_java.jogador.Jogador;
@@ -42,7 +43,11 @@ public class Historico {
 	}
 	
 	public Turno getUltimoTurno() {
-		return this.historico.getLast();
+		try {
+			return this.historico.getLast();
+		} catch (NoSuchElementException e) {
+			return null;
+		}
 	}
 	
 	//TO DO: Trocar array por ArrayList

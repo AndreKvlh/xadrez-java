@@ -20,7 +20,7 @@ public class Rei extends Peca {
 	}
 
 	@Override
-	public boolean validarMovimento(Posicao posNova, Tabuleiro tabuleiro) {
+	public boolean validarMovimento(Posicao posNova, Tabuleiro tabuleiro, boolean enPassant) {
 		System.out.println(this.posInicial);
 		this.calcularPossibilidades(tabuleiro);
 		if(this.isPosInicial()) this.calcularRoque(tabuleiro);

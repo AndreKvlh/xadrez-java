@@ -1,7 +1,10 @@
 package com.xadrez.project.xadrez_java.acoes;
 
+import com.xadrez.project.xadrez_java.historico.Historico;
 import com.xadrez.project.xadrez_java.jogador.Jogador;
+import com.xadrez.project.xadrez_java.peca.CorPeca;
 import com.xadrez.project.xadrez_java.peca.Peca;
+import com.xadrez.project.xadrez_java.peca.peao.Peao;
 import com.xadrez.project.xadrez_java.peca.torre.Torre;
 import com.xadrez.project.xadrez_java.regras.Validador;
 import com.xadrez.project.xadrez_java.tabuleiro.Coluna;
@@ -12,17 +15,18 @@ import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
 public class Movimento {
 	private Validador validador;
 	private Tabuleiro tabuleiro;
+	private Historico historico;
 	
-	public Movimento(Tabuleiro tabuleiro) {
+	public Movimento(Tabuleiro tabuleiro, Historico historico) {
 		this.validador = new Validador();
 		this.tabuleiro = tabuleiro;
+		this.historico = historico;
 	}
 	
 	//Executa o movimento de roque
 	public void executarRoque(Peca peca, Posicao posAntiga, Tabuleiro tabuleiro) {
 		int dx = peca.getPosicaoAtual().x() - posAntiga.x();
 		Linha linhaRei = peca.getPosicaoAtual().l();
-		if(peca.isPosInicial()) peca.setPosInicial(false);
 		
 		Peca torre = null;
 		Posicao novaPosTorre;
@@ -36,21 +40,41 @@ public class Movimento {
 		}
 		
 		if (!(torre instanceof Torre)) return;
+		if(torre.isPosInicial()) torre.setPosInicial(false);
 		this.executarMovimento(torre, torre.getPosicaoAtual(), novaPosTorre, tabuleiro);
+	}
+	
+	//Método para liberar a possibilidade de fazer o en passant
+	public void liberarEnPassant(Peca peca, Posicao posicao) {
+		int[][] direcoes = peca.getCor() == CorPeca.BRANCA ? new int[][]{{1,-1},{-1,-1}} : new int[][]{{1,1},{-1,1}};
+		
+		int dx = peca.getPosicaoAtual().x() - posicao.x();
+		int dy = peca.getPosicaoAtual().y() - posicao.y();
+		
+		for(int[] direcao : direcoes) {
+			if (dx == direcao[0] && dy == direcao[1]) {
+				peca.getPosDeMovimento().add(posicao);
+				break;
+			}
+		}
 	}
 	
 	//Executar o movimento da peça
 	public Peca executarMovimento(Peca peca, Posicao posAntiga, Posicao posNova, Tabuleiro tabuleiro) {
-		Peca pecaInimiga = this.tabuleiro.getPeca(posNova);
+		Peca pecaInimiga = null;
+		if(this.validador.checarEnPassant(peca, this.tabuleiro, this.historico)) {
+			int indiceLinNova = posNova.l().getIndice();
+			int indiceLinAntiga = posAntiga.l().getIndice();
+			Posicao posCaptura = indiceLinNova > indiceLinAntiga ? new Posicao(posNova.c(), Linha.deIndice(indiceLinNova - 1)) : new Posicao(posNova.c(), Linha.deIndice(indiceLinNova + 1));
+			pecaInimiga = this.tabuleiro.getPeca(posCaptura);
+		} else {
+			pecaInimiga = this.tabuleiro.getPeca(posNova);
+		}
 		peca.setPosicaoAtual(posNova);
 		tabuleiro.inserirPeca(peca);
 		tabuleiro.removerPeca(posAntiga);
 		if(this.validador.checarRoque(peca, posAntiga, posNova)) this.executarRoque(peca, posAntiga, tabuleiro);
-		if(peca.isPosInicial()) peca.setPosInicial(false);
-		if(pecaInimiga != null) {	
-			return pecaInimiga;
-		}
-		return null;
+		return pecaInimiga;
 	}
 	
 	//Validar o movimento criando um tabuleiro virtual que imita o
@@ -59,19 +83,20 @@ public class Movimento {
 		if(!this.validador.checarOutOfBounds(jogada.inicio())) return false;
 		Posicao posAntiga = jogada.posInicio();
 		Posicao posNova = jogada.posDestino();
+		//System.out.printf("%d,%d", posNova.x(), posNova.y());
 		
 		Tabuleiro tabVirtual = new Tabuleiro(this.tabuleiro);
 		Jogador jgVirtual = jogador.getJogador() == 0 ? tabVirtual.getJogadores()[0] : tabVirtual.getJogadores()[1];
 		Peca pecaJogada = tabVirtual.getPeca(posAntiga);
 		
 		if(!this.validador.checarPecaValida(pecaJogada, jgVirtual)) return false;
-		if(!pecaJogada.validarMovimento(posNova, tabVirtual)) return false;
+		if(!pecaJogada.validarMovimento(posNova, tabVirtual, this.validador.checarEnPassant(pecaJogada, tabVirtual, this.historico))) return false;
 		this.executarMovimento(pecaJogada, posAntiga, posNova, tabVirtual);
 		
-		if (this.validador.checarXeque(jgVirtual, tabVirtual)) {
+		/*if (this.validador.checarXeque(jgVirtual, tabVirtual)) {
 			System.out.println("Posição te deixará/manterá em xeque, selecione outra");
 			return false;
-		}
+		}*/
 		return true;
 	}
 }

@@ -50,7 +50,7 @@ public abstract class Peca {
 	
 	public abstract Peca copiar();
 	
-	public boolean validarMovimento(Posicao posNova, Tabuleiro tabuleiro) {
+	public boolean validarMovimento(Posicao posNova, Tabuleiro tabuleiro, boolean enPassant) {
 		this.calcularPossibilidades(tabuleiro);
 		if (!this.getPosDeMovimento().contains(posNova)) {
 			System.out.println("Movimento inválido! Tente novamente");

@@ -31,7 +31,7 @@ public class XequeMateTeste {
 		
 		//Criação das regras para validação e movimento
 		Validador validador = new Validador();
-		Movimento movimento = new Movimento(tabuleiro);
+		Movimento movimento = new Movimento(tabuleiro, null);
 		
 		//Criação das peças participantes da cor preta
 		Peca reiP = new Rei(CorPeca.PRETA, new Posicao(Coluna.E,Linha.L8),jogador2);

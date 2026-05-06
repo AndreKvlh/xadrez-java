@@ -2,6 +2,7 @@ package com.xadrez.project.xadrez_java.regras;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.xadrez.project.xadrez_java.acoes.Jogada;
@@ -165,40 +166,53 @@ public class Validador {
 	//Checar se é possível realizar o En Passant
 	public boolean checarEnPassant(Peca peca, Tabuleiro tabuleiro, Historico historico) {
 		if (!(peca instanceof Peao)) return false;
+		if (historico == null || historico.getUltimoTurno() == null) return false;
+		
 		
 		int x = peca.getPosicaoAtual().x();
 		int y = peca.getPosicaoAtual().y();
-		
-		//Gambiarra desgraçada. Quando refatorar arruma isso aqui meu
-		Peca[] pecasLaterais = {null, null};
-		int dir = -3;
-		
-		for(Peca pecaAtual : pecasLaterais) {
-			dir += 2;
+		System.out.printf("%d,%d A", x, y);
+		//Busca pelas peças na lateral do peão
+		List<Peca> pecasLaterais = new ArrayList<>();
+		for (int i = -1; i < 2; i++) {
+			if (i == 0) continue;
 			try {
-				pecaAtual = tabuleiro.getPeca(new Posicao(Coluna.deIndice(x + dir), Linha.deIndice(y)));
+				Peca pecaAtual = tabuleiro.getPeca(new Posicao(Coluna.deIndice(x + i), Linha.deIndice(y)));
+				
+				System.out.println(pecaAtual.getPosicaoAtual().x());
+				if(pecaAtual != null) pecasLaterais.add(pecaAtual);
 			} catch (IllegalArgumentException e){
 				continue;
 			}
 		}
-		//Verificação das laterais do peão
-		if (pecasLaterais[0] == null && pecasLaterais[1] == null) return false;
+		System.out.println(pecasLaterais.size());
 		
-		if (!(pecasLaterais[0] instanceof Peao) && !(pecasLaterais[1] instanceof Peao)) return false;
+		//Verificação das laterais do peão
+		if (pecasLaterais.size() < 2) return false;
+		
+		if (pecasLaterais.get(0) == null && pecasLaterais.get(1) == null) return false;
+		System.out.println("Há ao menos uma peça na lateral");
+		
+		if (!(pecasLaterais.get(0) instanceof Peao) && !(pecasLaterais.get(1) instanceof Peao)) return false;
+		System.out.println("Há ao menos um peão na lateral");
 		
 		//Coleta do último turno
 		Turno ultimoTurno = historico.getUltimoTurno();
 		
 		if(!(ultimoTurno.peca() instanceof Peao)) return false;
+		if(ultimoTurno.peca().getCor().equals(peca.getCor())) return false;
+		System.out.println("O último turno foi movimento de um peão");
 		
 		Posicao posInicioTurno = ultimoTurno.jogada().posInicio();
 		Posicao posDestinoTurno = ultimoTurno.jogada().posDestino();
 		
-		if(!posDestinoTurno.posicao().equals(pecasLaterais[0].getPosicaoAtual().posicao())
-		&& !posDestinoTurno.posicao().equals(pecasLaterais[1].getPosicaoAtual().posicao())) return false;
+		if(!posDestinoTurno.posicao().equals(pecasLaterais.get(0).getPosicaoAtual().posicao())
+		&& !posDestinoTurno.posicao().equals(pecasLaterais.get(1).getPosicaoAtual().posicao())) return false;
+		System.out.println("O peão do último turno é o mesmo que está ao lado");
 		
 		//Caso seja identificado, iremos ver se houve passo duplo
 		if(Math.abs(posInicioTurno.y() - posDestinoTurno.y()) != 2) return false;
+		System.out.println("O peão se moveu duas casas");
 		
 		return true;
 	}

@@ -44,7 +44,7 @@ public class CalcularRoqueTeste {
 		Posicao roqueD = Posicao.converterStringEmPos("G1");
 		
 		//Verificar se é possível roque a direita, no qual é verdadeiro
-		assertTrue(this.rei.validarMovimento(roqueD, this.tabuleiro), "Deverá retornar verdadeiro pois quadrados estão livres para fazer o roque");
+		assertTrue(this.rei.validarMovimento(roqueD, this.tabuleiro, false), "Deverá retornar verdadeiro pois quadrados estão livres para fazer o roque");
 	}
 	
 	@Test
@@ -53,7 +53,7 @@ public class CalcularRoqueTeste {
 		Posicao roqueD = Posicao.converterStringEmPos("G1");
 		
 		//Verificar se é possível roque a direita, no qual é falso devido a não estar mais na posição inicial
-		assertFalse(this.rei.validarMovimento(roqueD, this.tabuleiro), "Deverá retornar falso pois torre já se moveu");
+		assertFalse(this.rei.validarMovimento(roqueD, this.tabuleiro, false), "Deverá retornar falso pois torre já se moveu");
 	}
 	
 	@Test
@@ -65,6 +65,6 @@ public class CalcularRoqueTeste {
 		Posicao roqueE = Posicao.converterStringEmPos("C1");
 		
 		//Verificar se é possível um roque a esquerda, no qual é falso
-		assertFalse(this.rei.validarMovimento(roqueE, this.tabuleiro), "Deverá retornar falso pois há cavalo impedindo o roque");
+		assertFalse(this.rei.validarMovimento(roqueE, this.tabuleiro, false), "Deverá retornar falso pois há cavalo impedindo o roque");
 	}
 }
