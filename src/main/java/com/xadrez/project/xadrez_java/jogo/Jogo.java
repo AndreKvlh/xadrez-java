@@ -4,6 +4,8 @@ import java.util.Scanner;
 
 import com.xadrez.project.xadrez_java.acoes.Jogada;
 import com.xadrez.project.xadrez_java.acoes.Movimento;
+import com.xadrez.project.xadrez_java.alertas.EmXequeException;
+import com.xadrez.project.xadrez_java.alertas.FimDeJogoException;
 import com.xadrez.project.xadrez_java.historico.Historico;
 import com.xadrez.project.xadrez_java.jogador.Jogador;
 import com.xadrez.project.xadrez_java.jogador.JogadorHumano;
@@ -32,6 +34,10 @@ public class Jogo {
 	
 	//Atributo que controla o estado do jogo
 	private boolean jogoAtivo;
+	
+	private Status statusJogo;
+	
+	private int jogadorAtual;
 	
 	//Atributo que controla o turno atual do jogo
 	private int turno = 1;
@@ -133,6 +139,7 @@ public class Jogo {
 			this.posInicialPecas(jogador, this.tabuleiro);
 		}
 		this.setJogoAtivo(true);
+		this.statusJogo = Status.EM_ANDAMENTO;
 	}
 	
 	public void reiniciarJogo() {
@@ -146,6 +153,7 @@ public class Jogo {
 			jogador.getPecasAtuais().clear();
 			jogador.getPecasCapturadas().clear();
 		}
+		this.jogadorAtual = 0;
 		this.iniciarJogo();
 	}
 	
@@ -156,87 +164,53 @@ public class Jogo {
 	}
 	
 	//Método responsável por controlar o gameloop de cada um dos jogadores
-	public void rodarJogo() {
-		this.iniciarJogo();
-		do {
-			this.tabuleiro.gerarTabuleiro();
-			for (Jogador jogador : this.jogadores) {
-				//if (jogador instanceof JogadorIA) continue;
-				//Condições de vitória ou empate
-				if(this.validador.checarXequeMate(jogador, this.tabuleiro, this.movimento)) {
-					this.darXequeMate(jogador);
-					break;
-				}
-				if(this.validador.checarAfogamento(jogador, this.tabuleiro, this.movimento)) {
-					System.out.printf("Jogador %d sem movimentos possiveis, empate por Afogamento (Stalemate)", jogador.getJogador() + 1);
-					this.jogoAtivo = false;
-					break;
-				}
-				if(this.validador.checarPecasInsuficientes(jogador, this.tabuleiro, this.movimento)) {
-					System.out.println("Empate devido a insuficiência de peças.");
-					this.jogoAtivo = false;
-					break;
-				}
-				if(this.validador.checarRepeticao(jogador, this.tabuleiro, this.historico)) {
-					System.out.println("Empate devido a repetição de movimento.");
-					this.jogoAtivo = false;
-					break;
-				}
-				
-				
-				Jogada jogada;
-				do {
-					jogada = jogador.realizarJogada(tabuleiro);
-					if(jogada == null) {
-						this.darXequeMate(jogador);
-						break;
-					}
-					if(!this.movimento.validarJogada(jogador, jogada)) continue;
-					break;
-				} while (true);
-				if (this.jogoAtivo) {
-					Peca pecaSelecionada = jogada.pecaSelecionada(this.tabuleiro);
-					Peca pecaCapturada = this.movimento.executarMovimento(pecaSelecionada, jogada.posInicio(), jogada.posDestino(), this.tabuleiro);
-					if(pecaCapturada != null) this.executarCaptura(pecaSelecionada, pecaCapturada);
-					if(this.validador.checarPromocao(pecaSelecionada)) this.promoverPeao(pecaSelecionada, this.tabuleiro);
-					
-					//Salvar turno no histórico
-					this.historico.salvarTurno(this.turno, this.tabuleiro, jogador, pecaSelecionada, jogada);
-					
-					if(pecaSelecionada.isPosInicial()) pecaSelecionada.setPosInicial(false);
-						
-					this.turno++;
-				}
-			}
-		} while (this.jogoAtivo);
+	public void encerrarJogo(Jogador jogador) {
+		Jogador jogadorAdv = jogador.getJogador() == 0 ? this.jogadores[1] : this.jogadores[0];
+		if(this.validador.checarXequeMate(jogadorAdv, this.tabuleiro, this.movimento)) {
+			this.statusJogo = Status.XEQUE_MATE;
+		}
+		if(this.validador.checarAfogamento(jogadorAdv, this.tabuleiro, this.movimento)) {
+			this.statusJogo = Status.AFOGAMENTO;
+		}
+		if(this.validador.checarPecasInsuficientes(jogadorAdv, this.tabuleiro, this.movimento)
+		|| this.validador.checarRepeticao(jogadorAdv, this.tabuleiro, this.historico)) {
+			this.statusJogo = Status.EMPATE;
+		}
 	}
 	
-	public void JogadaDaIA() {
-		Jogada jogada;
+	public Jogada JogadaDaIA() {
 		Jogador jogador = this.jogadores[1];
 		do {
-			jogada = jogador.realizarJogada(tabuleiro);
+			Jogada jogada = jogador.realizarJogada(tabuleiro);
 			if(jogada == null) {
 				this.darXequeMate(jogador);
 				break;
 			}
 			if(!this.movimento.validarJogada(jogador, jogada)) continue;
-			break;
+			return jogada;
 		} while (true);
-		if (this.jogoAtivo) {
-			Peca pecaSelecionada = jogada.pecaSelecionada(this.tabuleiro);
-			Peca pecaCapturada = this.tabuleiro.getPeca(jogada.posDestino());
-			if(pecaCapturada != null) this.executarCaptura(pecaSelecionada, pecaCapturada);
-			this.movimento.executarMovimento(pecaSelecionada, jogada.posInicio(), jogada.posDestino(), this.tabuleiro);
-			if(this.validador.checarPromocao(pecaSelecionada)) this.promoverPeao(pecaSelecionada, this.tabuleiro);
-			
-			//Salvar turno no histórico
-			this.historico.salvarTurno(this.turno, this.tabuleiro, jogador, pecaSelecionada, jogada);
-			
-			if(pecaSelecionada.isPosInicial()) pecaSelecionada.setPosInicial(false);
-				
-			this.turno++;
+		return null;
+	}
+	
+	public void executarJogada(Jogada jogada) {
+		Jogador jogador = jogada.pecaSelecionada(tabuleiro).getJogadorResp();
+		if (!this.movimento.validarJogada(jogador, jogada) && jogador instanceof JogadorHumano) {
+			throw new EmXequeException("Você está em xeque, tente novamente.");
 		}
+		Peca pecaSelecionada = jogada.pecaSelecionada(this.tabuleiro);
+		Peca pecaCapturada = this.tabuleiro.getPeca(jogada.destino());
+		if(pecaCapturada != null) this.executarCaptura(pecaSelecionada, pecaCapturada);
+		this.movimento.executarMovimento(pecaSelecionada, jogada.inicio(), jogada.destino(), this.tabuleiro);
+		if(this.validador.checarPromocao(pecaSelecionada)) this.promoverPeao(pecaSelecionada, this.tabuleiro);
+		
+		//Salvar turno no histórico
+		this.historico.salvarTurno(this.turno, this.tabuleiro, pecaSelecionada.getJogadorResp(), pecaSelecionada, jogada);
+		
+		if(pecaSelecionada.isPosInicial()) pecaSelecionada.setPosInicial(false);
+			
+		this.encerrarJogo(jogador);
+		
+		this.turno++;
 	}
 	
 	public boolean isJogoAtivo() {
@@ -253,5 +227,21 @@ public class Jogo {
 	
 	public Movimento getMovimento() {
 		return movimento;
+	}
+	
+	public Status getStatus() {
+		return statusJogo;
+	}
+	
+	public void setJogadorAtual(int jogador) {
+		this.jogadorAtual = jogador;
+	}
+	
+	public int getJogadorAtual() {
+		return jogadorAtual;
+	}
+	
+	public Jogador getJogador() {
+		return jogadores[jogadorAtual];
 	}
 }

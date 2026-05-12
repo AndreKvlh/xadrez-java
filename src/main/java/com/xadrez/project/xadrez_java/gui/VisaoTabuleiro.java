@@ -1,9 +1,14 @@
 package com.xadrez.project.xadrez_java.gui;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
+import com.xadrez.project.xadrez_java.acoes.Jogada;
 import com.xadrez.project.xadrez_java.acoes.Movimento;
+import com.xadrez.project.xadrez_java.alertas.EmXequeException;
+import com.xadrez.project.xadrez_java.jogador.JogadorIA;
 import com.xadrez.project.xadrez_java.jogo.Jogo;
+import com.xadrez.project.xadrez_java.jogo.Status;
 import com.xadrez.project.xadrez_java.peca.CorPeca;
 import com.xadrez.project.xadrez_java.peca.Peca;
 import com.xadrez.project.xadrez_java.tabuleiro.Posicao;
@@ -11,6 +16,9 @@ import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
 
 import javafx.animation.PauseTransition;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.GridPane;
@@ -125,18 +133,22 @@ public class VisaoTabuleiro {
 			boolean captura = pecaAdv != null;
 			String cor = captura ? "#BA0000" : "#E3C100";
 			quadrado.setFill(Paint.valueOf(cor));
-			quadrado.setOnMouseClicked(event -> realizarJogada(peca, pos, captura));
+			quadrado.setOnMouseClicked(event -> realizarJogada(peca, pos));
 			gridPane.add(quadrado, pos.x() + 1, pos.y() + 1);
 		}
 	};
 	
-	public void realizarJogada(Peca peca, Posicao pos, boolean captura) {
-		Peca p = this.tabuleiro.getPeca(pos);
+	public void realizarJogada(Peca peca, Posicao pos) {
+		/*Peca p = this.tabuleiro.getPeca(pos);
 		if (captura) this.jogo.executarCaptura(peca, p);
-		this.movimento.executarMovimento(peca, peca.getPosicaoAtual(), pos, this.tabuleiro);
-		gridPane.getChildren().clear();
-		this.gerarTabuleiro();
-		this.jogadaIA();
+		this.movimento.executarMovimento(peca, peca.getPosicaoAtual(), pos, this.tabuleiro);*/
+		try {
+			Jogada jogada = new Jogada(peca.getPosicaoAtual(), pos);
+			this.jogo.executarJogada(jogada);
+			this.checarEstadoJogo();
+		} catch (EmXequeException e) {
+			this.exibirAlerta(e.getMessage());
+		}
 	};
 	
 	public void jogadaIA() {
@@ -145,12 +157,69 @@ public class VisaoTabuleiro {
 		PauseTransition pausa = new PauseTransition(Duration.seconds(1.5));
 		
 		pausa.setOnFinished(event -> {
-			this.jogo.JogadaDaIA();
-			this.gerarTabuleiro();
+			Jogada jogada = this.jogo.JogadaDaIA();
+			this.jogo.executarJogada(jogada);
+			this.checarEstadoJogo();
 			gridPane.setDisable(false);
 		});
 		
 		pausa.play();
+	}
+	
+	private void exibirAlerta(String msg) {
+		Alert alerta = new Alert(Alert.AlertType.WARNING);
+		alerta.setTitle("Aviso");
+		alerta.setHeaderText(null);
+		alerta.setContentText(msg);
+		alerta.showAndWait();
+	}
+	
+	private void exibirMensagemFimDeJogo(String msg) {
+		Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+		alerta.setTitle("Fim de Jogo");
+		alerta.setHeaderText(null);
+		alerta.setContentText(msg);
+		
+		ButtonType reiniciar = new ButtonType("Reiniciar");
+		ButtonType sair = new ButtonType("Sair", ButtonBar.ButtonData.CANCEL_CLOSE);
+		
+		alerta.getButtonTypes().setAll(reiniciar,sair);
+		
+		Optional<ButtonType> resultado = alerta.showAndWait();
+		
+		if(resultado.isPresent()) {
+			if(resultado.get() == reiniciar) {
+				this.reiniciarTabuleiro();
+			}
+			else if (resultado.get() == sair) System.exit(0);
+		}
+	}
+	
+	public void reiniciarTabuleiro() {
+		gridPane.setDisable(false);
+		this.jogo.reiniciarJogo();
+		gridPane.getChildren().clear();
+		this.gerarTabuleiro();
+	}
+	
+	public void checarEstadoJogo() {
+		gridPane.getChildren().clear();
+		this.gerarTabuleiro();
+		
+		int jogadorAtual = this.jogo.getJogadorAtual() == 0 ? 1 : 0;
+		this.jogo.setJogadorAtual(jogadorAtual);
+		Status statusAtual = this.jogo.getStatus();
+		
+		if(statusAtual != Status.EM_ANDAMENTO) {
+			String mensagem;
+			if(statusAtual == Status.XEQUE_MATE) mensagem = String.format("Jogador %d sofreu xeque-mate!", this.jogo.getJogadorAtual() + 1);
+			else if(statusAtual == Status.AFOGAMENTO) mensagem = "Jogo encerrado por afogamento (stalemate)!";
+			else mensagem = "Jogo encerrado por empate!";
+			this.exibirMensagemFimDeJogo(mensagem);
+			gridPane.setDisable(true);
+		} else if (this.jogo.getJogador() instanceof JogadorIA) {
+			this.jogadaIA();
+		}
 	}
 	
 	public GridPane getGrid() {

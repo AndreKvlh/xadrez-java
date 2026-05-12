@@ -83,7 +83,7 @@ public class Validador {
 		for(Peca peca : jogador.getPecasAtuais()) {
 			peca.calcularPossibilidades(tabuleiro);
 			for(Posicao posicao : peca.getPosDeMovimento()) {
-				Jogada jogada = new Jogada(peca.getPosicaoAtual().posicao(), posicao.posicao());
+				Jogada jogada = new Jogada(peca.getPosicaoAtual(), posicao);
 				if(movimento.validarJogada(jogador, jogada)) return false;
 			}
 		}
@@ -96,7 +96,7 @@ public class Validador {
 		for(Peca peca : jogador.getPecasAtuais()) {
 			peca.calcularPossibilidades(tabuleiro);
 			for(Posicao posicao : peca.getPosDeMovimento()) {
-				Jogada jogada = new Jogada(peca.getPosicaoAtual().posicao(), posicao.posicao());
+				Jogada jogada = new Jogada(peca.getPosicaoAtual(), posicao);
 				if(movimento.validarJogada(jogador, jogada)) return false;
 			}
 		}
@@ -133,9 +133,9 @@ public class Validador {
 		Set<TipoPeca> pecasJ1 = new HashSet<>();
 		Set<TipoPeca> pecasJ2 = new HashSet<>();
 		
-		Set<String> jogadasJ1 = new HashSet<>();
-		Set<String> jogadasJ2 = new HashSet<>();
-		
+		Set<Posicao> jogadasJ1 = new HashSet<>();
+		Set<Posicao> jogadasJ2 = new HashSet<>();
+		//TO DO: ajustar verificação conforme posição e não conforme string
 		for(int i = 0; i < ultimosTurnos.length; i++) {
 			if(i % 2 == 0) {
 				pecasJ1.add(ultimosTurnos[i].peca().getTipo());
@@ -194,8 +194,8 @@ public class Validador {
 		if(!(ultimoTurno.peca() instanceof Peao)) return false;
 		if(ultimoTurno.peca().getCor().equals(peca.getCor())) return false;
 		
-		Posicao posInicioTurno = ultimoTurno.jogada().posInicio();
-		Posicao posDestinoTurno = ultimoTurno.jogada().posDestino();
+		Posicao posInicioTurno = ultimoTurno.jogada().inicio();
+		Posicao posDestinoTurno = ultimoTurno.jogada().destino();
 		
 		if(pecasLaterais.stream().allMatch(p -> !posDestinoTurno.posicao().equals(p.getPosicaoAtual().posicao()))) return false;
 		

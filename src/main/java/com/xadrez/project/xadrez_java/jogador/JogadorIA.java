@@ -26,12 +26,12 @@ public class JogadorIA extends Jogador{
 	
 	public Jogada realizarJogada(Tabuleiro tabuleiro) {
 		//Atributos para obtenção das informações da jogada
-		String inicio, destino;
+		Posicao inicio, destino;
 		this.movimento = new Movimento(tabuleiro, null);
 		inicio = this.computador.selecionarPeca(getPecasAtuais(), tabuleiro, this.validador, this.movimento);
-		if (inicio.isEmpty()) return null;
+		if (inicio == null) return null;
 		
-		destino = this.computador.moverPeca(tabuleiro.getPeca(Posicao.converterStringEmPos(inicio)), tabuleiro);
+		destino = this.computador.moverPeca(tabuleiro.getPeca(inicio), tabuleiro);
 		
 		return new Jogada(inicio, destino);
 	}

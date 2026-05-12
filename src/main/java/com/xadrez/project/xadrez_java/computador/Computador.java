@@ -11,7 +11,7 @@ import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
 
 public class Computador {
 	//Método para selecionar uma peça que pode se mover
-	public String selecionarPeca(ArrayList<Peca> pecas, Tabuleiro tabuleiro, Validador validador, Movimento movimento) {
+	public Posicao selecionarPeca(ArrayList<Peca> pecas, Tabuleiro tabuleiro, Validador validador, Movimento movimento) {
 		ArrayList<Peca> pecasPrioritarias = new ArrayList<>();
 		ArrayList<Peca> pecasQueTemMovimento = new ArrayList<>();
 		ArrayList<Peca> movimentoEmXeque = new ArrayList<>();
@@ -25,7 +25,7 @@ public class Computador {
 			for(Posicao pos : peca.getPosDeMovimento()) {
 				if(validador.checarXeque(peca.getJogadorResp(), tabuleiro)) {
 					emXeque = true;
-					Jogada jogada = new Jogada(peca.getPosicaoAtual().posicao(), pos.posicao());
+					Jogada jogada = new Jogada(peca.getPosicaoAtual(), pos);
 					if(movimento.validarJogada(peca.getJogadorResp(), jogada)) {
 						movimentoEmXeque.add(peca);
 						continue;
@@ -53,19 +53,19 @@ public class Computador {
 				pecaSelecionada = pecasQueTemMovimento.get(aleatorio);
 			}
 		}
-		if (pecaSelecionada != null) return pecaSelecionada.getPosicaoAtual().posicao();
-		return "";
+		if (pecaSelecionada != null) return pecaSelecionada.getPosicaoAtual();
+		return null;
 	}
 	
 	//Método para selecionar a jogada com a peça escolhida
-	public String moverPeca(Peca peca, Tabuleiro tabuleiro) {
+	public Posicao moverPeca(Peca peca, Tabuleiro tabuleiro) {
 		for(Posicao pos : peca.getPosDeMovimento()) {
 			if(tabuleiro.getPeca(pos) != null) {
-				return pos.posicao();
+				return pos;
 			}
 		}
 		int aleatorio = (int) (Math.random() * peca.getPosDeMovimento().size());
 		Posicao novaPosicao = peca.getPosDeMovimento().get(aleatorio);
-		return novaPosicao.posicao();
+		return novaPosicao;
 	}
 }

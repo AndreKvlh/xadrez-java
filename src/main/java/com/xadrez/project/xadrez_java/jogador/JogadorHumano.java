@@ -28,6 +28,6 @@ public class JogadorHumano extends Jogador {
 		System.out.print("Digite a posição na qual você quer mover a peça: ");
 		destino = this.leitor.next();
 		
-		return new Jogada(inicio, destino);
+		return null;
 	}
 }

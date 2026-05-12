@@ -4,17 +4,17 @@ import com.xadrez.project.xadrez_java.peca.Peca;
 import com.xadrez.project.xadrez_java.tabuleiro.Posicao;
 import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
 
-public record Jogada(String inicio, String destino) {
+public record Jogada(Posicao inicio, Posicao destino) {
 	public Peca pecaSelecionada(Tabuleiro tabuleiro) {
-		return tabuleiro.getPeca(this.posInicio());
+		return tabuleiro.getPeca(this.inicio());
 	}
 	
-	public Posicao posInicio() {
-		return Posicao.converterStringEmPos(inicio);
+	public Posicao inicio() {
+		return inicio;
 	}
 	
-	public Posicao posDestino() {
-		return Posicao.converterStringEmPos(destino);
+	public Posicao destino() {
+		return destino;
 	}
 	
 	public Jogada copiar() {
