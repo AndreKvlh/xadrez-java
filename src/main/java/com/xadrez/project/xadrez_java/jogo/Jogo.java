@@ -211,11 +211,47 @@ public class Jogo {
 		} while (this.jogoAtivo);
 	}
 	
+	public void JogadaDaIA() {
+		Jogada jogada;
+		Jogador jogador = this.jogadores[1];
+		do {
+			jogada = jogador.realizarJogada(tabuleiro);
+			if(jogada == null) {
+				this.darXequeMate(jogador);
+				break;
+			}
+			if(!this.movimento.validarJogada(jogador, jogada)) continue;
+			break;
+		} while (true);
+		if (this.jogoAtivo) {
+			Peca pecaSelecionada = jogada.pecaSelecionada(this.tabuleiro);
+			Peca pecaCapturada = this.tabuleiro.getPeca(jogada.posDestino());
+			if(pecaCapturada != null) this.executarCaptura(pecaSelecionada, pecaCapturada);
+			this.movimento.executarMovimento(pecaSelecionada, jogada.posInicio(), jogada.posDestino(), this.tabuleiro);
+			if(this.validador.checarPromocao(pecaSelecionada)) this.promoverPeao(pecaSelecionada, this.tabuleiro);
+			
+			//Salvar turno no histórico
+			this.historico.salvarTurno(this.turno, this.tabuleiro, jogador, pecaSelecionada, jogada);
+			
+			if(pecaSelecionada.isPosInicial()) pecaSelecionada.setPosInicial(false);
+				
+			this.turno++;
+		}
+	}
+	
 	public boolean isJogoAtivo() {
 		return jogoAtivo;
 	}
 	
 	public void setJogoAtivo(boolean jogoAtivo) {
 		this.jogoAtivo = jogoAtivo;
+	}
+
+	public Tabuleiro getTabuleiro() {
+		return tabuleiro;
+	}
+	
+	public Movimento getMovimento() {
+		return movimento;
 	}
 }

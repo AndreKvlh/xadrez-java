@@ -16,6 +16,9 @@ public abstract class Peca {
 	protected TipoPeca tipo;
 	protected CorPeca cor;
 	
+	//Atributo que substituirá a representação de fato
+	protected String unicode;
+	
 	//Atributo que armazena a string da posição da peça no tabuleiro atualmente
 	protected String posicao;
 	
@@ -138,5 +141,9 @@ public abstract class Peca {
 
 	public void setCor(CorPeca cor) {
 		this.cor = cor;
+	}
+	
+	public String getUnicode() {
+		return this.unicode;
 	}
 }

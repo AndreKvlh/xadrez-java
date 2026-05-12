@@ -17,6 +17,7 @@ public class Rei extends Peca {
 		this.setTipo(TipoPeca.REI);
 		this.direcoes = new int[][] {{0,-1},{1,-1},{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1}};
 		this.limMovimento = true;
+		this.unicode = this.getCor() == CorPeca.BRANCA ? "\u2654" : "\u265A";
 	}
 
 	@Override

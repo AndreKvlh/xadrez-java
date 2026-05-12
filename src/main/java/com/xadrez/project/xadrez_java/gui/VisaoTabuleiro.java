@@ -1,20 +1,41 @@
 package com.xadrez.project.xadrez_java.gui;
 
+import java.util.ArrayList;
+
+import com.xadrez.project.xadrez_java.acoes.Movimento;
+import com.xadrez.project.xadrez_java.jogo.Jogo;
+import com.xadrez.project.xadrez_java.peca.CorPeca;
+import com.xadrez.project.xadrez_java.peca.Peca;
+import com.xadrez.project.xadrez_java.tabuleiro.Posicao;
+import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
+
+import javafx.animation.PauseTransition;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 public class VisaoTabuleiro {
 	private GridPane gridPane;
+	private Jogo jogo;
+	private Tabuleiro tabuleiro;
+	private Movimento movimento;
 	
 	public VisaoTabuleiro() {
 		this.gridPane = new GridPane();
+		this.jogo = new Jogo();
+		this.tabuleiro = this.jogo.getTabuleiro();
+		this.movimento = this.jogo.getMovimento();
 		this.gridPane.setAlignment(Pos.CENTER);
+		this.jogo.iniciarJogo();
 		this.gerarTabuleiro();
 		
 	}
@@ -39,8 +60,10 @@ public class VisaoTabuleiro {
 					this.gerarTexto(nums.charAt(l - 1), c, l);
 					continue;
 				}
-				if ((l + c) % 2 == 0) this.gerarQuadrado(corBranca, c, l);
-				else this.gerarQuadrado(corPreta, c, l);
+				Peca peca = tabuleiro.getPecaNoTabuleiro(l - 1, c - 1);
+				if ((l + c) % 2 == 0) this.gerarQuadrado(corBranca, l, c);
+				else this.gerarQuadrado(corPreta, l, c);
+				if (peca != null) this.gerarPeca(peca, l, c);
 			}
 		}
 	}
@@ -50,6 +73,7 @@ public class VisaoTabuleiro {
 		quadrado.setWidth(70);
 		quadrado.setHeight(70);
 		quadrado.setFill(Paint.valueOf(cor));
+		
 		gridPane.add(quadrado, c, l);
 	}
 	
@@ -61,6 +85,72 @@ public class VisaoTabuleiro {
 		pane.setMinWidth(20);
 		pane.setMinHeight(20);
 		gridPane.add(pane, c, l);
+	}
+	
+	public void gerarPeca(Peca p, int c, int l) {
+		Label peca = new Label(p.getUnicode());
+		peca.setAlignment(Pos.CENTER);
+		peca.setMaxWidth(70);
+		peca.setMaxHeight(70);
+		peca.setFont(Font.font("Segoe UI Symbol", FontWeight.BOLD, 45));
+		
+		DropShadow contorno = new DropShadow();
+		contorno.setRadius(0.5);
+		contorno.setOffsetX(0);
+		contorno.setOffsetY(0);
+		contorno.setColor(Color.WHITE);
+		
+		peca.setEffect(contorno);
+		
+		peca.setOnMouseClicked(event -> verificarPossibilidades(l, c));
+		
+		gridPane.add(peca, c, l);
+	}
+	
+	public void verificarPossibilidades(int l, int c) {
+		Peca peca = this.tabuleiro.getPecaNoTabuleiro(c - 1, l - 1);
+		if(peca.getCor() == CorPeca.PRETA) return;
+		peca.calcularPossibilidades(this.tabuleiro);
+		this.realcarEscolhas(peca.getPosDeMovimento(), peca);
+	};
+	
+	public void realcarEscolhas(ArrayList<Posicao> posMov, Peca peca) {
+		gridPane.getChildren().clear();
+		this.gerarTabuleiro();
+		for(Posicao pos : posMov) {
+			Peca pecaAdv = this.tabuleiro.getPeca(pos);
+			Rectangle quadrado = new Rectangle();
+			quadrado.setWidth(70);
+			quadrado.setHeight(70);
+			boolean captura = pecaAdv != null;
+			String cor = captura ? "#BA0000" : "#E3C100";
+			quadrado.setFill(Paint.valueOf(cor));
+			quadrado.setOnMouseClicked(event -> realizarJogada(peca, pos, captura));
+			gridPane.add(quadrado, pos.x() + 1, pos.y() + 1);
+		}
+	};
+	
+	public void realizarJogada(Peca peca, Posicao pos, boolean captura) {
+		Peca p = this.tabuleiro.getPeca(pos);
+		if (captura) this.jogo.executarCaptura(peca, p);
+		this.movimento.executarMovimento(peca, peca.getPosicaoAtual(), pos, this.tabuleiro);
+		gridPane.getChildren().clear();
+		this.gerarTabuleiro();
+		this.jogadaIA();
+	};
+	
+	public void jogadaIA() {
+		gridPane.setDisable(true);
+		
+		PauseTransition pausa = new PauseTransition(Duration.seconds(1.5));
+		
+		pausa.setOnFinished(event -> {
+			this.jogo.JogadaDaIA();
+			this.gerarTabuleiro();
+			gridPane.setDisable(false);
+		});
+		
+		pausa.play();
 	}
 	
 	public GridPane getGrid() {

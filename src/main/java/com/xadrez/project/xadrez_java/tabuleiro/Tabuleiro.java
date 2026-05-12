@@ -24,12 +24,6 @@ public class Tabuleiro {
 	//Variáveis que armazenam as informações dos jogadores
 	private Jogador[] jogadores;
 	
-	//Arrays que compilam as colunas e linhas de forma 
-	//igual a de um tabuleiro, começando a contar a partir
-	//do canto inferior esquerdo
-	private char[] colunas = {'A','B','C','D','E','F','G','H'};
-	private char[] linhas = {'8','7','6','5','4','3','2','1'};
-	
 	public Tabuleiro(Jogador j1, Jogador j2) {
 		this.jogadores = new Jogador[] {j1,j2};
 	};
@@ -52,36 +46,7 @@ public class Tabuleiro {
 		}
 		
 	}
-	
-	//Função para converter uma coordenada em posição;
-	public String coordEmPosicao(int c, int l) {
-		String posicao = String.format("%c%c",this.colunas[c],this.linhas[l]);
-		return posicao;
-	}
-	
-	//Função para converter uma posição em coordenada;
-	public int[] posicaoEmCoord(String pos) {
-		int coluna = this.acharCoord(this.colunas, pos.charAt(0));
-		int linha = this.acharCoord(this.linhas, pos.charAt(1));
-		int[] coord = {coluna, linha};
-		return coord;
-	}
-	
-	//Função feita para fazer uma binary search mesmo com
-	//o array em ordem decrescente
-	private int acharCoord(char[] seq ,char c) {
-		for (int i = 0; i < seq.length; i++) {
-			if (seq[i] == c) return i;
-		}
-		return -1;
-	}
-	
-	//Coloca a peça na posição designada
-	public void colocarPeca(Peca p, String pos) {
-		int[] coord = this.posicaoEmCoord(pos);
-		pecasNoTabuleiro[coord[1]][coord[0]] = p;
-	}
-	
+		
 	//Alteração do método acima
 	public void inserirPeca(Peca peca) {
 		int[] coord = peca.getPosicaoAtual().getCoord();

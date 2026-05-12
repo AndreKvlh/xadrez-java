@@ -12,6 +12,7 @@ public class Rainha extends Peca {
 		this.setTipo(TipoPeca.RAINHA);
 		this.direcoes = new int[][] {{0,-1},{1,-1},{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1}};
 		this.limMovimento = false;
+		this.unicode = this.getCor() == CorPeca.BRANCA ? "\u2655" : "\u265B";
 	}
 	
 	@Override

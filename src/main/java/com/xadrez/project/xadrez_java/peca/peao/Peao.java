@@ -18,6 +18,7 @@ public class Peao extends Peca{
 		this.direcoes = jogadorResp.getJogador() == 0 ? new int[][]{{0,-1}} : new int[][]{{0,1}};
 		this.direcoesAtaque = jogadorResp.getJogador() == 0 ? new int[][]{{1,-1},{-1,-1}} : new int[][]{{1,1},{-1,1}};
 		this.limMovimento = true;
+		this.unicode = this.getCor() == CorPeca.BRANCA ? "\u2659" : "\u265F";
 	}
 
 	@Override

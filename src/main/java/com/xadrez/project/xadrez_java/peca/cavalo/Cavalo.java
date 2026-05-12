@@ -12,6 +12,7 @@ public class Cavalo extends Peca {
 		this.setTipo(TipoPeca.CAVALO);
 		this.direcoes = new int[][]{{-1,-2},{1,-2},{2,-1},{2,1},{1,2},{-1,2},{-2,1},{-2,-1}};
 		this.limMovimento = true;
+		this.unicode = this.getCor() == CorPeca.BRANCA ? "\u2658" : "\u265E";
 	}
 
 	@Override

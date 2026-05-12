@@ -12,6 +12,7 @@ public class Bispo extends Peca {
 		this.setTipo(TipoPeca.BISPO);
 		this.direcoes = new int[][] {{-1,-1},{-1,1},{1,1},{1,-1}};
 		this.limMovimento = false;
+		this.unicode = this.getCor() == CorPeca.BRANCA ? "\u2657" : "\u265D";
 	}
 	
 	@Override

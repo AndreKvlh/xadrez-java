@@ -12,6 +12,7 @@ public class Torre extends Peca {
 		this.setTipo(TipoPeca.TORRE);
 		this.direcoes = new int[][] {{0,-1},{1,0},{0,1},{-1,0}};
 		this.limMovimento = false;
+		this.unicode = this.getCor() == CorPeca.BRANCA ? "\u2656" : "\u265C";
 	}
 
 	@Override
