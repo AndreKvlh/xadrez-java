@@ -6,11 +6,14 @@ import java.util.Optional;
 import com.xadrez.project.xadrez_java.acoes.Jogada;
 import com.xadrez.project.xadrez_java.acoes.Movimento;
 import com.xadrez.project.xadrez_java.alertas.EmXequeException;
+import com.xadrez.project.xadrez_java.historico.Historico;
 import com.xadrez.project.xadrez_java.jogador.JogadorIA;
 import com.xadrez.project.xadrez_java.jogo.Jogo;
 import com.xadrez.project.xadrez_java.jogo.Status;
 import com.xadrez.project.xadrez_java.peca.CorPeca;
 import com.xadrez.project.xadrez_java.peca.Peca;
+import com.xadrez.project.xadrez_java.peca.peao.Peao;
+import com.xadrez.project.xadrez_java.regras.Validador;
 import com.xadrez.project.xadrez_java.tabuleiro.Posicao;
 import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
 
@@ -35,6 +38,8 @@ public class VisaoTabuleiro {
 	private GridPane gridPane;
 	private Jogo jogo;
 	private Tabuleiro tabuleiro;
+	private Historico historico;
+	private Validador validador;
 	private Movimento movimento;
 	
 	public VisaoTabuleiro() {
@@ -42,6 +47,8 @@ public class VisaoTabuleiro {
 		this.jogo = new Jogo();
 		this.tabuleiro = this.jogo.getTabuleiro();
 		this.movimento = this.jogo.getMovimento();
+		this.historico = this.jogo.getHistorico();
+		this.validador = this.jogo.getValidador();
 		this.gridPane.setAlignment(Pos.CENTER);
 		this.jogo.iniciarJogo();
 		this.gerarTabuleiro();
@@ -118,7 +125,8 @@ public class VisaoTabuleiro {
 	public void verificarPossibilidades(int l, int c) {
 		Peca peca = this.tabuleiro.getPecaNoTabuleiro(c - 1, l - 1);
 		if(peca.getCor() == CorPeca.PRETA) return;
-		peca.calcularPossibilidades(this.tabuleiro);
+		if (peca instanceof Peao) peca.calcularPossibilidades(this.tabuleiro, this.historico, this.validador);
+		else peca.calcularPossibilidades(this.tabuleiro);
 		this.realcarEscolhas(peca.getPosDeMovimento(), peca);
 	};
 	
@@ -215,8 +223,8 @@ public class VisaoTabuleiro {
 			if(statusAtual == Status.XEQUE_MATE) mensagem = String.format("Jogador %d sofreu xeque-mate!", this.jogo.getJogadorAtual() + 1);
 			else if(statusAtual == Status.AFOGAMENTO) mensagem = "Jogo encerrado por afogamento (stalemate)!";
 			else mensagem = "Jogo encerrado por empate!";
-			this.exibirMensagemFimDeJogo(mensagem);
 			gridPane.setDisable(true);
+			this.exibirMensagemFimDeJogo(mensagem);
 		} else if (this.jogo.getJogador() instanceof JogadorIA) {
 			this.jogadaIA();
 		}

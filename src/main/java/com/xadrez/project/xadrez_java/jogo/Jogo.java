@@ -198,7 +198,13 @@ public class Jogo {
 			throw new EmXequeException("Você está em xeque, tente novamente.");
 		}
 		Peca pecaSelecionada = jogada.pecaSelecionada(this.tabuleiro);
-		Peca pecaCapturada = this.tabuleiro.getPeca(jogada.destino());
+		Peca pecaCapturada = null;
+		if(this.validador.checarEnPassant(pecaSelecionada, this.tabuleiro, this.historico)) {
+			int dx = jogada.destino().x();
+			int dy = jogada.destino().y() - jogada.inicio().y() > 0 ? jogada.destino().y() -1 : jogada.destino().y() + 1;
+			Posicao pos = new Posicao(Coluna.deIndice(dx), Linha.deIndice(dy));
+			pecaCapturada = this.tabuleiro.getPeca(pos);
+		} else pecaCapturada = this.tabuleiro.getPeca(jogada.destino());
 		if(pecaCapturada != null) this.executarCaptura(pecaSelecionada, pecaCapturada);
 		this.movimento.executarMovimento(pecaSelecionada, jogada.inicio(), jogada.destino(), this.tabuleiro);
 		if(this.validador.checarPromocao(pecaSelecionada)) this.promoverPeao(pecaSelecionada, this.tabuleiro);
@@ -227,6 +233,14 @@ public class Jogo {
 	
 	public Movimento getMovimento() {
 		return movimento;
+	}
+	
+	public Validador getValidador() {
+		return validador;
+	}
+	
+	public Historico getHistorico() {
+		return historico;
 	}
 	
 	public Status getStatus() {

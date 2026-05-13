@@ -1,9 +1,12 @@
 package com.xadrez.project.xadrez_java.peca.peao;
 
+import com.xadrez.project.xadrez_java.acoes.Jogada;
+import com.xadrez.project.xadrez_java.historico.Historico;
 import com.xadrez.project.xadrez_java.jogador.Jogador;
 import com.xadrez.project.xadrez_java.peca.CorPeca;
 import com.xadrez.project.xadrez_java.peca.Peca;
 import com.xadrez.project.xadrez_java.peca.TipoPeca;
+import com.xadrez.project.xadrez_java.regras.Validador;
 import com.xadrez.project.xadrez_java.tabuleiro.Coluna;
 import com.xadrez.project.xadrez_java.tabuleiro.Linha;
 import com.xadrez.project.xadrez_java.tabuleiro.Posicao;
@@ -61,6 +64,18 @@ public class Peao extends Peca{
 	}
 	
 	@Override
+	public void calcularPossibilidades(Tabuleiro tabuleiro, Historico historico, Validador validador) {
+		this.calcularPossibilidades(tabuleiro);
+		if (validador.checarEnPassant(this, tabuleiro, historico)) {
+			Jogada jogada = historico.getUltimoTurno().jogada();
+			int dx = jogada.destino().x();
+			int dy = jogada.destino().y() - jogada.inicio().y() > 0 ? jogada.destino().y() -1 : jogada.destino().y() + 1;
+			Posicao posNova = new Posicao(Coluna.deIndice(dx), Linha.deIndice(dy));
+			this.liberarEnPassant(posNova);
+		}
+	}
+	
+	@Override
 	public Peca copiar() {
 		return new Peao(this.cor, this.posicaoAtual, this.jogadorResp);
 	}
@@ -71,6 +86,7 @@ public class Peao extends Peca{
 		
 		for(int[] direcao : direcoesAtaque) {
 			if (dx == direcao[0] && dy == direcao[1]) {
+				System.out.println("En passant aqui");
 				this.posDeMovimento.add(posicao);
 				break;
 			}

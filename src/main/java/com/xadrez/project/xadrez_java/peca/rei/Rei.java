@@ -33,6 +33,12 @@ public class Rei extends Peca {
 	}
 	
 	@Override
+	public void calcularPossibilidades(Tabuleiro tabuleiro) {
+		super.calcularPossibilidades(tabuleiro);
+		this.calcularRoque(tabuleiro);
+	}
+	
+	@Override
 	public Peca copiar() {
 		return new Rei(this.cor, this.posicaoAtual, this.jogadorResp);
 	}

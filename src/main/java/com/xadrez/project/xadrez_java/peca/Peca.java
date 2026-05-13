@@ -2,7 +2,9 @@ package com.xadrez.project.xadrez_java.peca;
 
 import java.util.ArrayList;
 
+import com.xadrez.project.xadrez_java.historico.Historico;
 import com.xadrez.project.xadrez_java.jogador.Jogador;
+import com.xadrez.project.xadrez_java.regras.Validador;
 import com.xadrez.project.xadrez_java.tabuleiro.Coluna;
 import com.xadrez.project.xadrez_java.tabuleiro.Linha;
 import com.xadrez.project.xadrez_java.tabuleiro.Posicao;
@@ -82,6 +84,8 @@ public abstract class Peca {
 			}
 		}
 	}
+	
+	public void calcularPossibilidades(Tabuleiro tabuleiro, Historico historico, Validador validador) {};
 
 	public String getPosicao() {
 		return posicao;
