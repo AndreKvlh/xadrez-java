@@ -54,7 +54,7 @@ public class Peao extends Peca{
 		for(int[] direcoes : this.direcoesAtaque) {
 			int colAtual = coord[0] + direcoes[0];
 			int linAtual = coord[1] + direcoes[1];
-			if (colAtual > 7 || colAtual < 0 || linAtual > 7 || linAtual < 0) break;
+			if (colAtual > 7 || colAtual < 0 || linAtual > 7 || linAtual < 0) continue;
 			Posicao posAtual = new Posicao(Coluna.deIndice(colAtual), Linha.deIndice(linAtual));
 			Peca conteudoPeca = tabuleiro.getPeca(posAtual);
 			if (conteudoPeca == null) continue;

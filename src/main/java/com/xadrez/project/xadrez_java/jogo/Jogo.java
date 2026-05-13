@@ -5,7 +5,6 @@ import java.util.Scanner;
 import com.xadrez.project.xadrez_java.acoes.Jogada;
 import com.xadrez.project.xadrez_java.acoes.Movimento;
 import com.xadrez.project.xadrez_java.alertas.EmXequeException;
-import com.xadrez.project.xadrez_java.alertas.FimDeJogoException;
 import com.xadrez.project.xadrez_java.historico.Historico;
 import com.xadrez.project.xadrez_java.jogador.Jogador;
 import com.xadrez.project.xadrez_java.jogador.JogadorHumano;
@@ -45,7 +44,7 @@ public class Jogo {
 	public Jogo() {
 		this.validador = new Validador();
 		this.leitor = new Scanner(System.in);
-		this.jogadores = new Jogador[] {new JogadorHumano(0, this.leitor), new JogadorIA(1)};
+		this.jogadores = new Jogador[] {new JogadorHumano(0), new JogadorHumano(1)};
 		this.tabuleiro = new Tabuleiro(this.jogadores[0],this.jogadores[1]);
 		this.jogoAtivo = false;
 		this.historico = new Historico();
@@ -100,36 +99,23 @@ public class Jogo {
 	}
 	
 	//Método responsável por promover o peão quando este chegar ao fim do tabuleiro
-	public void promoverPeao(Peca peao, Tabuleiro tabuleiro) {
-		//String agrupando todas as possibilidades de opções
-		String opcoesPromo = "TtCcBbQq";
-		
-		//Variável que irá guardar a opção escolhida
-		char op;
-		System.out.print("Escolha uma das peças para promover o peão: T,C,B,Q ");
-		
-		//Loop que irá averiguar que se o jogador colocou a opção correta
-		do {
-			op = leitor.next().charAt(0);
-			if(opcoesPromo.indexOf(op) != -1) {
-				break;
-			}
-			System.out.println("Escolha inválida, tente novamente!");
-		} while (true);
-		
+	public void promoverPeao(Peca peao, Tabuleiro tabuleiro, String peca) {
 		//Pesquisa responsável para verificar e achar a peça dentre as peças que o jogador
 		//possui
 		int indice = peao.getJogadorResp().getPecasAtuais().indexOf(peao);
+		System.out.println(indice);
 		if (indice != -1) {
-			Peca novaPeca = switch (op) {
-				case 'T','t' -> new Torre(peao.getCor(), peao.getPosicaoAtual(), peao.getJogadorResp());
-				case 'C','c' -> new Cavalo(peao.getCor(), peao.getPosicaoAtual(), peao.getJogadorResp());
-				case 'B','b' -> new Bispo(peao.getCor(), peao.getPosicaoAtual(), peao.getJogadorResp());
+			System.out.println("Seleiconei a peça");
+			Peca novaPeca = switch (peca) {
+				case "Torre" -> new Torre(peao.getCor(), peao.getPosicaoAtual(), peao.getJogadorResp());
+				case "Cavalo" -> new Cavalo(peao.getCor(), peao.getPosicaoAtual(), peao.getJogadorResp());
+				case "Bispo" -> new Bispo(peao.getCor(), peao.getPosicaoAtual(), peao.getJogadorResp());
 				default -> new Rainha(peao.getCor(), peao.getPosicaoAtual(), peao.getJogadorResp());
 			};
 			
 			//Alterar a peça e remover o peão
 			peao.getJogadorResp().getPecasAtuais().set(indice, novaPeca);
+			tabuleiro.removerPeca(peao.getPosicaoAtual());
 			tabuleiro.inserirPeca(novaPeca);
 		}
 	}
@@ -207,7 +193,7 @@ public class Jogo {
 		} else pecaCapturada = this.tabuleiro.getPeca(jogada.destino());
 		if(pecaCapturada != null) this.executarCaptura(pecaSelecionada, pecaCapturada);
 		this.movimento.executarMovimento(pecaSelecionada, jogada.inicio(), jogada.destino(), this.tabuleiro);
-		if(this.validador.checarPromocao(pecaSelecionada)) this.promoverPeao(pecaSelecionada, this.tabuleiro);
+		//if(this.validador.checarPromocao(pecaSelecionada)) this.promoverPeao(pecaSelecionada, this.tabuleiro);
 		
 		//Salvar turno no histórico
 		this.historico.salvarTurno(this.turno, this.tabuleiro, pecaSelecionada.getJogadorResp(), pecaSelecionada, jogada);

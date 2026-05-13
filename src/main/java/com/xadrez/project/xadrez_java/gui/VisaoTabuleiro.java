@@ -7,6 +7,7 @@ import com.xadrez.project.xadrez_java.acoes.Jogada;
 import com.xadrez.project.xadrez_java.acoes.Movimento;
 import com.xadrez.project.xadrez_java.alertas.EmXequeException;
 import com.xadrez.project.xadrez_java.historico.Historico;
+import com.xadrez.project.xadrez_java.jogador.JogadorHumano;
 import com.xadrez.project.xadrez_java.jogador.JogadorIA;
 import com.xadrez.project.xadrez_java.jogo.Jogo;
 import com.xadrez.project.xadrez_java.jogo.Status;
@@ -124,7 +125,7 @@ public class VisaoTabuleiro {
 	
 	public void verificarPossibilidades(int l, int c) {
 		Peca peca = this.tabuleiro.getPecaNoTabuleiro(c - 1, l - 1);
-		if(peca.getCor() == CorPeca.PRETA) return;
+		//if(peca.getCor() == CorPeca.PRETA) return;
 		if (peca instanceof Peao) peca.calcularPossibilidades(this.tabuleiro, this.historico, this.validador);
 		else peca.calcularPossibilidades(this.tabuleiro);
 		this.realcarEscolhas(peca.getPosDeMovimento(), peca);
@@ -211,6 +212,14 @@ public class VisaoTabuleiro {
 	}
 	
 	public void checarEstadoJogo() {
+		Posicao posUltPeca = this.historico.getUltimoTurno().jogada().destino();
+		Peca ultimaPeca = this.tabuleiro.getPeca(posUltPeca);
+
+		if(this.validador.checarPromocao(ultimaPeca)) {
+			if(ultimaPeca.getJogadorResp() instanceof JogadorHumano) this.exibirPromocaoPeao(ultimaPeca);
+			else this.jogo.promoverPeao(ultimaPeca, this.tabuleiro, "Rainha");
+		}
+		
 		gridPane.getChildren().clear();
 		this.gerarTabuleiro();
 		
@@ -227,6 +236,26 @@ public class VisaoTabuleiro {
 			this.exibirMensagemFimDeJogo(mensagem);
 		} else if (this.jogo.getJogador() instanceof JogadorIA) {
 			this.jogadaIA();
+		}
+	}
+	
+	public void exibirPromocaoPeao(Peca peca) {
+		Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+		alerta.setTitle("Promover peão");
+		alerta.setHeaderText(null);
+		alerta.setContentText("Selecione para qual peça você quer promover o peão:");
+		
+		ButtonType torre = new ButtonType("Torre");
+		ButtonType cavalo = new ButtonType("Cavalo");
+		ButtonType bispo = new ButtonType("Bispo");
+		ButtonType rainha = new ButtonType("Rainha");
+
+		alerta.getButtonTypes().setAll(torre, cavalo, bispo, rainha);
+		
+		Optional<ButtonType> resultado = alerta.showAndWait();
+		
+		if(resultado.isPresent()) {
+			this.jogo.promoverPeao(peca, this.tabuleiro, resultado.get().getText());
 		}
 	}
 	
