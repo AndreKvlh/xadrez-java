@@ -10,9 +10,6 @@ public abstract class Jogador {
 	//Variável que define qual jogador é
 	protected int jogador;
 	
-	//Variável condicional que diz se o jogador está em xeque
-	protected boolean xeque = false;
-	
 	//ArrayList que compila todas as peças que o jogador possui
 	protected ArrayList<Peca> pecasAtuais = new ArrayList<>();
 	
@@ -23,16 +20,7 @@ public abstract class Jogador {
 		this.jogador = jogador;
 		this.pecasAtuais = new ArrayList<>();
 		this.pecasCapturadas = new ArrayList<>();
-		this.xeque = false;
 	}
-	
-	//Construtor de cópia de objeto
-	/*public Jogador(Jogador outro) {
-		this.jogador = outro.jogador;
-		this.pecasAtuais = new ArrayList<>();
-		this.pecasCapturadas = new ArrayList<>();
-		this.xeque = outro.xeque;
-	}*/
 	
 	public abstract Jogador copiar();
 	
@@ -61,13 +49,5 @@ public abstract class Jogador {
 	
 	public ArrayList<Peca> getPecasCapturadas() {
 		return pecasCapturadas;
-	}
-	
-	public boolean isXeque() {
-		return xeque;
-	}
-	
-	public void setXeque(boolean xeque) {
-		this.xeque = xeque;
 	}
 }

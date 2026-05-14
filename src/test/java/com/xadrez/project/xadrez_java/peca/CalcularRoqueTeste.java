@@ -8,9 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import com.xadrez.project.xadrez_java.jogador.Jogador;
 import com.xadrez.project.xadrez_java.jogador.JogadorIA;
-import com.xadrez.project.xadrez_java.peca.cavalo.Cavalo;
-import com.xadrez.project.xadrez_java.peca.rei.Rei;
-import com.xadrez.project.xadrez_java.peca.torre.Torre;
 import com.xadrez.project.xadrez_java.tabuleiro.Coluna;
 import com.xadrez.project.xadrez_java.tabuleiro.Linha;
 import com.xadrez.project.xadrez_java.tabuleiro.Posicao;

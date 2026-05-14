@@ -2,14 +2,9 @@ package com.xadrez.project.xadrez_java.acoes;
 
 import com.xadrez.project.xadrez_java.historico.Historico;
 import com.xadrez.project.xadrez_java.jogador.Jogador;
-import com.xadrez.project.xadrez_java.peca.CorPeca;
-import com.xadrez.project.xadrez_java.peca.Peca;
-import com.xadrez.project.xadrez_java.peca.torre.Torre;
+import com.xadrez.project.xadrez_java.peca.*;
 import com.xadrez.project.xadrez_java.regras.Validador;
-import com.xadrez.project.xadrez_java.tabuleiro.Coluna;
-import com.xadrez.project.xadrez_java.tabuleiro.Linha;
-import com.xadrez.project.xadrez_java.tabuleiro.Posicao;
-import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
+import com.xadrez.project.xadrez_java.tabuleiro.*;
 
 public class Movimento {
 	private Validador validador;
@@ -62,7 +57,6 @@ public class Movimento {
 	public Peca executarMovimento(Peca peca, Posicao posAntiga, Posicao posNova, Tabuleiro tabuleiro) {
 		Peca pecaInimiga = null;
 		if(this.validador.checarEnPassant(peca, this.tabuleiro, this.historico)) {
-			System.out.println("En passant");
 			Posicao posCaptura = new Posicao(posNova.c(), posAntiga.l());
 			pecaInimiga = this.tabuleiro.getPeca(posCaptura);
 		} else {

@@ -5,24 +5,13 @@ import java.util.ArrayList;
 import com.xadrez.project.xadrez_java.historico.Historico;
 import com.xadrez.project.xadrez_java.jogador.Jogador;
 import com.xadrez.project.xadrez_java.regras.Validador;
-import com.xadrez.project.xadrez_java.tabuleiro.Coluna;
-import com.xadrez.project.xadrez_java.tabuleiro.Linha;
-import com.xadrez.project.xadrez_java.tabuleiro.Posicao;
-import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
+import com.xadrez.project.xadrez_java.tabuleiro.*;
 
 public abstract class Peca {
-	//Atributo que representa a peça no tabuleiro
-	protected char representacao;
-	
-	//Atributos que substitui o acima
-	protected TipoPeca tipo;
 	protected CorPeca cor;
 	
 	//Atributo que substituirá a representação de fato
 	protected String unicode;
-	
-	//Atributo que armazena a string da posição da peça no tabuleiro atualmente
-	protected String posicao;
 	
 	//Atributo que substitui o acima
 	protected Posicao posicaoAtual;
@@ -58,12 +47,11 @@ public abstract class Peca {
 	public boolean validarMovimento(Posicao posNova, Tabuleiro tabuleiro, boolean enPassant) {
 		this.calcularPossibilidades(tabuleiro);
 		if (!this.getPosDeMovimento().contains(posNova)) {
-			System.out.println("Movimento inválido! Tente novamente");
 			return false;
 		}
 		return true;
 	}
-	
+	//TODO: Com a IA, rei ainda fica travado quando fica em xeque, arrumar depois
 	public void calcularPossibilidades(Tabuleiro tabuleiro) {
 		if(!getPosDeMovimento().isEmpty()) getPosDeMovimento().clear();
 		int[] coord = this.posicaoAtual.getCoord();
@@ -72,7 +60,7 @@ public abstract class Peca {
 			for (int i = 1; i < distancia; i++) {
 				int colAtual = coord[0] + (i * direcoes[0]);
 				int linAtual = coord[1] + (i * direcoes[1]);
-				if (colAtual > 7 || colAtual < 0 || linAtual > 7 || linAtual < 0) break;
+				if (colAtual > 7 || colAtual < 0 || linAtual > 7 || linAtual < 0) continue;
 				Posicao posAtual = new Posicao(Coluna.deIndice(colAtual), Linha.deIndice(linAtual));
 				Peca conteudoPeca = tabuleiro.getPeca(posAtual);
 				if (conteudoPeca != null) {
@@ -87,28 +75,12 @@ public abstract class Peca {
 	
 	public void calcularPossibilidades(Tabuleiro tabuleiro, Historico historico, Validador validador) {};
 
-	public String getPosicao() {
-		return posicao;
-	}
-
-	public void setPosicao(String posicao) {
-		this.posicao = posicao;
-	}
-
 	public boolean isPosInicial() {
 		return posInicial;
 	}
 
 	public void setPosInicial(boolean posInicial) {
 		this.posInicial = posInicial;
-	}
-
-	public char getRepresentacao() {
-		return representacao;
-	}
-
-	public void setRepresentacao(char representacao) {
-		this.representacao = representacao;
 	}
 	
 	public Jogador getJogadorResp() {
@@ -129,14 +101,6 @@ public abstract class Peca {
 
 	public void setPosicaoAtual(Posicao posicaoAtual) {
 		this.posicaoAtual = posicaoAtual;
-	}
-
-	public TipoPeca getTipo() {
-		return tipo;
-	}
-
-	public void setTipo(TipoPeca tipo) {
-		this.tipo = tipo;
 	}
 
 	public CorPeca getCor() {

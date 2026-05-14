@@ -1,11 +1,8 @@
-package com.xadrez.project.xadrez_java.peca.peao;
+package com.xadrez.project.xadrez_java.peca;
 
 import com.xadrez.project.xadrez_java.acoes.Jogada;
 import com.xadrez.project.xadrez_java.historico.Historico;
 import com.xadrez.project.xadrez_java.jogador.Jogador;
-import com.xadrez.project.xadrez_java.peca.CorPeca;
-import com.xadrez.project.xadrez_java.peca.Peca;
-import com.xadrez.project.xadrez_java.peca.TipoPeca;
 import com.xadrez.project.xadrez_java.regras.Validador;
 import com.xadrez.project.xadrez_java.tabuleiro.Coluna;
 import com.xadrez.project.xadrez_java.tabuleiro.Linha;
@@ -17,9 +14,8 @@ public class Peao extends Peca{
 	
 	public Peao(CorPeca cor, Posicao posicaoAtual, Jogador jogadorResp) {
 		super(cor, posicaoAtual, jogadorResp);
-		this.setTipo(TipoPeca.PEAO);
-		this.direcoes = jogadorResp.getJogador() == 0 ? new int[][]{{0,-1}} : new int[][]{{0,1}};
-		this.direcoesAtaque = jogadorResp.getJogador() == 0 ? new int[][]{{1,-1},{-1,-1}} : new int[][]{{1,1},{-1,1}};
+		this.direcoes = this.posicaoAtual.y() > 3 ? new int[][]{{0,-1}} : new int[][]{{0,1}};
+		this.direcoesAtaque = this.posicaoAtual.y() > 3 ? new int[][]{{1,-1},{-1,-1}} : new int[][]{{1,1},{-1,1}};
 		this.limMovimento = true;
 		this.unicode = this.getCor() == CorPeca.BRANCA ? "\u2659" : "\u265F";
 	}
@@ -29,7 +25,6 @@ public class Peao extends Peca{
 		this.calcularPossibilidades(tabuleiro);
 		if (enPassant) this.liberarEnPassant(posNova);
 		if (!this.getPosDeMovimento().contains(posNova)) {
-			System.out.println("Movimento inválido! Tente novamente");
 			return false;
 		}
 		return true;
@@ -86,7 +81,6 @@ public class Peao extends Peca{
 		
 		for(int[] direcao : direcoesAtaque) {
 			if (dx == direcao[0] && dy == direcao[1]) {
-				System.out.println("En passant aqui");
 				this.posDeMovimento.add(posicao);
 				break;
 			}

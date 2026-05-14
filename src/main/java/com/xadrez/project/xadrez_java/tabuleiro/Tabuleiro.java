@@ -9,18 +9,6 @@ public class Tabuleiro {
 	//Matriz de controle das peças e movimentos;
 	private Peca[][] pecasNoTabuleiro = new Peca[8][8];
 	
-	//Matriz de controle da cor das casas;
-	private int[][] coresDasCasas = {
-			{1,0,1,0,1,0,1,0},	
-			{0,1,0,1,0,1,0,1},
-			{1,0,1,0,1,0,1,0},	
-			{0,1,0,1,0,1,0,1},
-			{1,0,1,0,1,0,1,0},	
-			{0,1,0,1,0,1,0,1},
-			{1,0,1,0,1,0,1,0},	
-			{0,1,0,1,0,1,0,1}
-	};
-	
 	//Variáveis que armazenam as informações dos jogadores
 	private Jogador[] jogadores;
 	
@@ -58,25 +46,6 @@ public class Tabuleiro {
 		if (this.getPeca(pos) == null) return;
 		int[] coord = pos.getCoord();
 		pecasNoTabuleiro[coord[1]][coord[0]] = null;
-	}
-	
-	//Gerar o tabuleiro no console
-	public void gerarTabuleiro() {
-		for (int linha = 0; linha < 8; linha++) {
-			System.out.println("-----------------");
-			for (int coluna = 0; coluna < 8; coluna++) {
-				System.out.print("|");
-				if (this.pecasNoTabuleiro[linha][coluna] == null) {
-					System.out.print(" ");
-					continue;
-				}
-				Peca peca = pecasNoTabuleiro[linha][coluna];
-				char tipo = peca.getTipo().getSimbolo(peca.getCor().getCorPeca());
-				System.out.print(tipo);
-			}
-			System.out.println("|");
-		}
-		System.out.println("-----------------");
 	}
 	
 	//Obter informação da peça que está em uma posição específica

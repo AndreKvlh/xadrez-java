@@ -10,7 +10,6 @@ public class App extends Application
 {	
 	@Override
     public void start(Stage stage) {
-        //Label label = new Label("Tabuleiro de Xadrez v0.1");
 		VisaoTabuleiro visaoTabuleiro = new VisaoTabuleiro();
         Scene scene = new Scene(visaoTabuleiro.getGrid(), 600, 600);
         stage.setScene(scene);
@@ -18,8 +17,6 @@ public class App extends Application
     }
 
     public static void main(String[] args) {
-    		//Jogo jogo = new Jogo();
-    		//jogo.rodarJogo();
         launch();
     }
 }

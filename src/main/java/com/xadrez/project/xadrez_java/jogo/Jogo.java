@@ -1,38 +1,19 @@
 package com.xadrez.project.xadrez_java.jogo;
 
-import java.util.Scanner;
-
-import com.xadrez.project.xadrez_java.acoes.Jogada;
-import com.xadrez.project.xadrez_java.acoes.Movimento;
+import com.xadrez.project.xadrez_java.acoes.*;
 import com.xadrez.project.xadrez_java.alertas.EmXequeException;
 import com.xadrez.project.xadrez_java.historico.Historico;
-import com.xadrez.project.xadrez_java.jogador.Jogador;
-import com.xadrez.project.xadrez_java.jogador.JogadorHumano;
-import com.xadrez.project.xadrez_java.jogador.JogadorIA;
-import com.xadrez.project.xadrez_java.peca.CorPeca;
-import com.xadrez.project.xadrez_java.peca.Peca;
-import com.xadrez.project.xadrez_java.peca.bispo.Bispo;
-import com.xadrez.project.xadrez_java.peca.cavalo.Cavalo;
-import com.xadrez.project.xadrez_java.peca.peao.Peao;
-import com.xadrez.project.xadrez_java.peca.rainha.Rainha;
-import com.xadrez.project.xadrez_java.peca.rei.Rei;
-import com.xadrez.project.xadrez_java.peca.torre.Torre;
+import com.xadrez.project.xadrez_java.jogador.*;
+import com.xadrez.project.xadrez_java.peca.*;
 import com.xadrez.project.xadrez_java.regras.Validador;
-import com.xadrez.project.xadrez_java.tabuleiro.Coluna;
-import com.xadrez.project.xadrez_java.tabuleiro.Linha;
-import com.xadrez.project.xadrez_java.tabuleiro.Posicao;
-import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
+import com.xadrez.project.xadrez_java.tabuleiro.*;
 
 public class Jogo {
 	private final Jogador[] jogadores;
 	private final Tabuleiro tabuleiro;
 	private final Movimento movimento;
 	private final Validador validador;
-	private final Scanner leitor;
 	private final Historico historico;
-	
-	//Atributo que controla o estado do jogo
-	private boolean jogoAtivo;
 	
 	private Status statusJogo;
 	
@@ -41,12 +22,10 @@ public class Jogo {
 	//Atributo que controla o turno atual do jogo
 	private int turno = 1;
 	
-	public Jogo() {
+	public Jogo(Jogador j1, Jogador j2) {
 		this.validador = new Validador();
-		this.leitor = new Scanner(System.in);
-		this.jogadores = new Jogador[] {new JogadorHumano(0), new JogadorHumano(1)};
+		this.jogadores = new Jogador[] {j1, j2};
 		this.tabuleiro = new Tabuleiro(this.jogadores[0],this.jogadores[1]);
-		this.jogoAtivo = false;
 		this.historico = new Historico();
 		this.movimento = new Movimento(this.tabuleiro, this.historico);
 	}
@@ -55,9 +34,9 @@ public class Jogo {
 	//para cada um respectivamente as suas peças
 	public void posInicialPecas(Jogador jogador, Tabuleiro tabuleiro) {
 		//Variáveis que irão ser alteradas conforme o jogador que as chama
-		int linhaPeoes = jogador.getJogador() == 0 ? 6 : 1;
-		int linhaPecas = jogador.getJogador() == 0 ? 7 : 0;
 		CorPeca corPecasJogador = jogador.getJogador() == 0 ? CorPeca.BRANCA : CorPeca.PRETA;
+		int linhaPeoes = jogador.equals(this.jogadores[0]) ? 6 : 1;
+		int linhaPecas = jogador.equals(this.jogadores[0]) ? 7 : 0;
 		
 		//Variável que abriga os objetos criados das peças
 		Peca peca = null;
@@ -85,46 +64,11 @@ public class Jogo {
 		}
 	}
 	
-	//Executa a captura da peça, fazendo com que ela seja eliminada do 
-	//array de pecasAtuais do jogador e colocado no array de pecasCapturadas
-	//do outro
-	public void executarCaptura (Peca pecaJogador, Peca pecaAdv) {
-		Jogador jogadorAtual = pecaJogador.getJogadorResp();
-		Jogador jogadorAdv = pecaAdv.getJogadorResp();
-		
-		jogadorAdv.getPecasAtuais().remove(pecaAdv);
-		jogadorAtual.getPecasCapturadas().add(pecaAdv);
-		
-		this.tabuleiro.removerPeca(pecaAdv.getPosicaoAtual());
-	}
-	
-	//Método responsável por promover o peão quando este chegar ao fim do tabuleiro
-	public void promoverPeao(Peca peao, Tabuleiro tabuleiro, String peca) {
-		//Pesquisa responsável para verificar e achar a peça dentre as peças que o jogador
-		//possui
-		int indice = peao.getJogadorResp().getPecasAtuais().indexOf(peao);
-		System.out.println(indice);
-		if (indice != -1) {
-			System.out.println("Seleiconei a peça");
-			Peca novaPeca = switch (peca) {
-				case "Torre" -> new Torre(peao.getCor(), peao.getPosicaoAtual(), peao.getJogadorResp());
-				case "Cavalo" -> new Cavalo(peao.getCor(), peao.getPosicaoAtual(), peao.getJogadorResp());
-				case "Bispo" -> new Bispo(peao.getCor(), peao.getPosicaoAtual(), peao.getJogadorResp());
-				default -> new Rainha(peao.getCor(), peao.getPosicaoAtual(), peao.getJogadorResp());
-			};
-			
-			//Alterar a peça e remover o peão
-			peao.getJogadorResp().getPecasAtuais().set(indice, novaPeca);
-			tabuleiro.removerPeca(peao.getPosicaoAtual());
-			tabuleiro.inserirPeca(novaPeca);
-		}
-	}
-	
 	public void iniciarJogo() {
 		for (Jogador jogador : this.jogadores) {
 			this.posInicialPecas(jogador, this.tabuleiro);
 		}
-		this.setJogoAtivo(true);
+		this.jogadorAtual = this.jogadores[0].getJogador() == 0 ? 0 : 1;
 		this.statusJogo = Status.EM_ANDAMENTO;
 	}
 	
@@ -139,33 +83,10 @@ public class Jogo {
 			jogador.getPecasAtuais().clear();
 			jogador.getPecasCapturadas().clear();
 		}
-		this.jogadorAtual = 0;
 		this.iniciarJogo();
 	}
 	
-	public void darXequeMate(Jogador jogador) {
-		Jogador jogadorVenc = jogador.getJogador() == 0 ? this.jogadores[1] : this.jogadores[0];
-		System.out.printf("XEQUE-MATE, vitória do jogador %d", jogadorVenc.getJogador() + 1);
-		this.jogoAtivo = false;
-	}
-	
-	//Método responsável por controlar o gameloop de cada um dos jogadores
-	public void encerrarJogo(Jogador jogador) {
-		Jogador jogadorAdv = jogador.getJogador() == 0 ? this.jogadores[1] : this.jogadores[0];
-		if(this.validador.checarXequeMate(jogadorAdv, this.tabuleiro, this.movimento)) {
-			this.statusJogo = Status.XEQUE_MATE;
-		}
-		if(this.validador.checarAfogamento(jogadorAdv, this.tabuleiro, this.movimento)) {
-			this.statusJogo = Status.AFOGAMENTO;
-		}
-		if(this.validador.checarPecasInsuficientes(jogadorAdv, this.tabuleiro, this.movimento)
-		|| this.validador.checarRepeticao(jogadorAdv, this.tabuleiro, this.historico)) {
-			this.statusJogo = Status.EMPATE;
-		}
-	}
-	
-	public Jogada JogadaDaIA() {
-		Jogador jogador = this.jogadores[1];
+	public Jogada JogadaDaIA(Jogador jogador) {
 		do {
 			Jogada jogada = jogador.realizarJogada(tabuleiro);
 			if(jogada == null) {
@@ -193,26 +114,64 @@ public class Jogo {
 		} else pecaCapturada = this.tabuleiro.getPeca(jogada.destino());
 		if(pecaCapturada != null) this.executarCaptura(pecaSelecionada, pecaCapturada);
 		this.movimento.executarMovimento(pecaSelecionada, jogada.inicio(), jogada.destino(), this.tabuleiro);
-		//if(this.validador.checarPromocao(pecaSelecionada)) this.promoverPeao(pecaSelecionada, this.tabuleiro);
 		
 		//Salvar turno no histórico
 		this.historico.salvarTurno(this.turno, this.tabuleiro, pecaSelecionada.getJogadorResp(), pecaSelecionada, jogada);
-		
 		if(pecaSelecionada.isPosInicial()) pecaSelecionada.setPosInicial(false);
-			
-		this.encerrarJogo(jogador);
+	}
+	
+	//Executa a captura da peça, fazendo com que ela seja eliminada do 
+	//array de pecasAtuais do jogador e colocado no array de pecasCapturadas
+	//do outro
+	public void executarCaptura (Peca pecaJogador, Peca pecaAdv) {
+		Jogador jogadorAtual = pecaJogador.getJogadorResp();
+		Jogador jogadorAdv = pecaAdv.getJogadorResp();
 		
-		this.turno++;
+		jogadorAdv.getPecasAtuais().remove(pecaAdv);
+		jogadorAtual.getPecasCapturadas().add(pecaAdv);
+		
+		this.tabuleiro.removerPeca(pecaAdv.getPosicaoAtual());
 	}
 	
-	public boolean isJogoAtivo() {
-		return jogoAtivo;
+	//Método responsável por promover o peão quando este chegar ao fim do tabuleiro
+	public void promoverPeao(Peca peao, Tabuleiro tabuleiro, String peca) {
+		//Pesquisa responsável para verificar e achar a peça dentre as peças que o jogador
+		//possui
+		int indice = peao.getJogadorResp().getPecasAtuais().indexOf(peao);
+		if (indice != -1) {
+			Peca novaPeca = switch (peca) {
+				case "Torre" -> new Torre(peao.getCor(), peao.getPosicaoAtual(), peao.getJogadorResp());
+				case "Cavalo" -> new Cavalo(peao.getCor(), peao.getPosicaoAtual(), peao.getJogadorResp());
+				case "Bispo" -> new Bispo(peao.getCor(), peao.getPosicaoAtual(), peao.getJogadorResp());
+				default -> new Rainha(peao.getCor(), peao.getPosicaoAtual(), peao.getJogadorResp());
+			};
+			
+			//Alterar a peça e remover o peão
+			peao.getJogadorResp().getPecasAtuais().set(indice, novaPeca);
+			tabuleiro.removerPeca(peao.getPosicaoAtual());
+			tabuleiro.inserirPeca(novaPeca);
+		}
 	}
 	
-	public void setJogoAtivo(boolean jogoAtivo) {
-		this.jogoAtivo = jogoAtivo;
+	//TODO: Verificar a necessidade deste reforço para o xeque-mate para a IA
+	public void darXequeMate(Jogador jogador) {
+		this.statusJogo = Status.XEQUE_MATE;
 	}
-
+	
+	//Método responsável por controlar o gameloop de cada um dos jogadores
+	public void encerrarJogo(Jogador jogador) {
+		if(this.validador.checarXequeMate(jogador, this.tabuleiro, this.movimento)) {
+			this.darXequeMate(jogador);
+		}
+		if(this.validador.checarAfogamento(jogador, this.tabuleiro, this.movimento)) {
+			this.statusJogo = Status.AFOGAMENTO;
+		}
+		if(this.validador.checarPecasInsuficientes(jogador, this.tabuleiro, this.movimento)
+		|| this.validador.checarRepeticao(jogador, this.tabuleiro, this.historico)) {
+			this.statusJogo = Status.EMPATE;
+		}
+	}
+	
 	public Tabuleiro getTabuleiro() {
 		return tabuleiro;
 	}
@@ -243,5 +202,13 @@ public class Jogo {
 	
 	public Jogador getJogador() {
 		return jogadores[jogadorAtual];
+	}
+	
+	public int getTurno() {
+		return turno;
+	}
+	
+	public void setTurno() {
+		this.turno++;
 	}
 }

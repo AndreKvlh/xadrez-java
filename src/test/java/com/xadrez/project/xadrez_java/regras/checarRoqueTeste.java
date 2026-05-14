@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import com.xadrez.project.xadrez_java.peca.CorPeca;
 import com.xadrez.project.xadrez_java.peca.Peca;
-import com.xadrez.project.xadrez_java.peca.rei.Rei;
-import com.xadrez.project.xadrez_java.peca.torre.Torre;
+import com.xadrez.project.xadrez_java.peca.Rei;
+import com.xadrez.project.xadrez_java.peca.Torre;
 import com.xadrez.project.xadrez_java.tabuleiro.Coluna;
 import com.xadrez.project.xadrez_java.tabuleiro.Linha;
 import com.xadrez.project.xadrez_java.tabuleiro.Posicao;

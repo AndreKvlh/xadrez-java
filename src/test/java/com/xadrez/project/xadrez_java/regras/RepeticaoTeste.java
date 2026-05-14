@@ -11,8 +11,8 @@ import com.xadrez.project.xadrez_java.jogador.Jogador;
 import com.xadrez.project.xadrez_java.jogador.JogadorIA;
 import com.xadrez.project.xadrez_java.peca.CorPeca;
 import com.xadrez.project.xadrez_java.peca.Peca;
-import com.xadrez.project.xadrez_java.peca.rainha.Rainha;
-import com.xadrez.project.xadrez_java.peca.rei.Rei;
+import com.xadrez.project.xadrez_java.peca.Rainha;
+import com.xadrez.project.xadrez_java.peca.Rei;
 import com.xadrez.project.xadrez_java.tabuleiro.Posicao;
 import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
 

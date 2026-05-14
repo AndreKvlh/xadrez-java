@@ -1,12 +1,8 @@
-package com.xadrez.project.xadrez_java.peca.rei;
+package com.xadrez.project.xadrez_java.peca;
 
 import java.util.ArrayList;
 
 import com.xadrez.project.xadrez_java.jogador.Jogador;
-import com.xadrez.project.xadrez_java.peca.CorPeca;
-import com.xadrez.project.xadrez_java.peca.Peca;
-import com.xadrez.project.xadrez_java.peca.TipoPeca;
-import com.xadrez.project.xadrez_java.peca.torre.Torre;
 import com.xadrez.project.xadrez_java.tabuleiro.Coluna;
 import com.xadrez.project.xadrez_java.tabuleiro.Posicao;
 import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
@@ -14,7 +10,6 @@ import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
 public class Rei extends Peca {
 	public Rei(CorPeca cor, Posicao posicaoAtual, Jogador jogadorResp) {
 		super(cor, posicaoAtual, jogadorResp);
-		this.setTipo(TipoPeca.REI);
 		this.direcoes = new int[][] {{0,-1},{1,-1},{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1}};
 		this.limMovimento = true;
 		this.unicode = this.getCor() == CorPeca.BRANCA ? "\u2654" : "\u265A";
@@ -22,11 +17,9 @@ public class Rei extends Peca {
 
 	@Override
 	public boolean validarMovimento(Posicao posNova, Tabuleiro tabuleiro, boolean enPassant) {
-		System.out.println(this.posInicial);
 		this.calcularPossibilidades(tabuleiro);
 		if(this.isPosInicial()) this.calcularRoque(tabuleiro);
 		if (!this.getPosDeMovimento().contains(posNova)) {
-			System.out.println("Movimento inválido! Tente novamente");
 			return false;
 		}
 		return true;
@@ -63,7 +56,6 @@ public class Rei extends Peca {
 			//xRei > xTorre = Torre esquerda (direção negativa)
 			
 			for (int i = 1; i < Math.abs(direcao); i++) {
-				System.out.println(direcao);
 				int dx;
 				if(direcao > 0) dx = 1;
 				else dx = -1;

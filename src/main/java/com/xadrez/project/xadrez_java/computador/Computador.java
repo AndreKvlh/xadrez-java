@@ -2,12 +2,10 @@ package com.xadrez.project.xadrez_java.computador;
 
 import java.util.ArrayList;
 
-import com.xadrez.project.xadrez_java.acoes.Jogada;
-import com.xadrez.project.xadrez_java.acoes.Movimento;
+import com.xadrez.project.xadrez_java.acoes.*;
 import com.xadrez.project.xadrez_java.peca.Peca;
 import com.xadrez.project.xadrez_java.regras.Validador;
-import com.xadrez.project.xadrez_java.tabuleiro.Posicao;
-import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
+import com.xadrez.project.xadrez_java.tabuleiro.*;
 
 public class Computador {
 	//Método para selecionar uma peça que pode se mover

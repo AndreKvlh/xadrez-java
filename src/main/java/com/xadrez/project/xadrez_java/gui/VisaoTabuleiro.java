@@ -4,16 +4,15 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import com.xadrez.project.xadrez_java.acoes.Jogada;
-import com.xadrez.project.xadrez_java.acoes.Movimento;
 import com.xadrez.project.xadrez_java.alertas.EmXequeException;
 import com.xadrez.project.xadrez_java.historico.Historico;
+import com.xadrez.project.xadrez_java.jogador.Jogador;
 import com.xadrez.project.xadrez_java.jogador.JogadorHumano;
 import com.xadrez.project.xadrez_java.jogador.JogadorIA;
 import com.xadrez.project.xadrez_java.jogo.Jogo;
 import com.xadrez.project.xadrez_java.jogo.Status;
-import com.xadrez.project.xadrez_java.peca.CorPeca;
+import com.xadrez.project.xadrez_java.peca.Peao;
 import com.xadrez.project.xadrez_java.peca.Peca;
-import com.xadrez.project.xadrez_java.peca.peao.Peao;
 import com.xadrez.project.xadrez_java.regras.Validador;
 import com.xadrez.project.xadrez_java.tabuleiro.Posicao;
 import com.xadrez.project.xadrez_java.tabuleiro.Tabuleiro;
@@ -41,19 +40,16 @@ public class VisaoTabuleiro {
 	private Tabuleiro tabuleiro;
 	private Historico historico;
 	private Validador validador;
-	private Movimento movimento;
 	
 	public VisaoTabuleiro() {
 		this.gridPane = new GridPane();
-		this.jogo = new Jogo();
+		this.jogo = this.menuModoDeJogo();
 		this.tabuleiro = this.jogo.getTabuleiro();
-		this.movimento = this.jogo.getMovimento();
 		this.historico = this.jogo.getHistorico();
 		this.validador = this.jogo.getValidador();
 		this.gridPane.setAlignment(Pos.CENTER);
 		this.jogo.iniciarJogo();
-		this.gerarTabuleiro();
-		
+		this.inicializarTabuleiro();
 	}
 	
 	public void gerarTabuleiro() {
@@ -65,7 +61,6 @@ public class VisaoTabuleiro {
 		for (int l = 0; l < 10; l++) {
 			for (int c = 0; c < 10; c++) {
 				if ((l == 0 || l == 9) && (c == 0 || c == 9)) {
-					System.out.println(" ");
 					continue;
 				}
 				if (l == 0 || l == 9 || c == 0 || c == 9) {
@@ -123,9 +118,61 @@ public class VisaoTabuleiro {
 		gridPane.add(peca, c, l);
 	}
 	
+	public Jogo menuModoDeJogo() {
+		Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+		alerta.setTitle("Modo de Jogo");
+		alerta.setHeaderText(null);
+		alerta.setContentText("Selecione o modo de jogo");
+		
+		ButtonType jvc = new ButtonType("Jogador vs IA");
+		ButtonType jvj = new ButtonType("Jogador vs Jogador");
+		ButtonType cvc = new ButtonType("IA vs IA");
+		
+		alerta.getButtonTypes().setAll(jvc, jvj, cvc);
+		
+		Optional<ButtonType> resultado = alerta.showAndWait();
+		
+		if(resultado.isPresent()) {
+			Jogador[] jogadores;
+			String modo = "";
+			if(resultado.get() == jvc) modo = "jvc";
+			else if (resultado.get() == jvj) modo = "jvj";
+			else if (resultado.get() == cvc) modo = "cvc";
+			jogadores = this.corDaPeca(modo);
+			return new Jogo(jogadores[0],jogadores[1]);
+		}
+		return null;
+	}
+	
+	public Jogador[] corDaPeca(String modo) {
+		Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+		alerta.setTitle("Cor da Peça");
+		alerta.setHeaderText(null);
+		alerta.setContentText("Selecione a cor da peça que você quer jogar");
+		
+		ButtonType branca = new ButtonType("Brancas");
+		ButtonType preta = new ButtonType("Pretas");
+		
+		alerta.getButtonTypes().setAll(branca, preta);
+		
+		Optional<ButtonType> resultado = alerta.showAndWait();
+		
+		if(resultado.isPresent()) {
+			int jogador1 = 0, jogador2;
+			if(resultado.get() == preta) jogador1 = 1;
+			jogador2 = jogador1 == 0 ? 1 : 0;
+			switch(modo) {
+				case "jvj" -> {return new Jogador[]{new JogadorHumano(jogador1), new JogadorHumano(jogador2)};}
+				case "cvc" -> {return new Jogador[]{new JogadorIA(jogador1), new JogadorIA(jogador2)};}
+				default -> {return new Jogador[]{new JogadorHumano(jogador1), new JogadorIA(jogador2)};}
+			}
+		}
+		return null;
+	}
+	
 	public void verificarPossibilidades(int l, int c) {
 		Peca peca = this.tabuleiro.getPecaNoTabuleiro(c - 1, l - 1);
-		//if(peca.getCor() == CorPeca.PRETA) return;
+		if(!peca.getJogadorResp().equals(this.jogo.getJogador())) return;
 		if (peca instanceof Peao) peca.calcularPossibilidades(this.tabuleiro, this.historico, this.validador);
 		else peca.calcularPossibilidades(this.tabuleiro);
 		this.realcarEscolhas(peca.getPosDeMovimento(), peca);
@@ -148,9 +195,6 @@ public class VisaoTabuleiro {
 	};
 	
 	public void realizarJogada(Peca peca, Posicao pos) {
-		/*Peca p = this.tabuleiro.getPeca(pos);
-		if (captura) this.jogo.executarCaptura(peca, p);
-		this.movimento.executarMovimento(peca, peca.getPosicaoAtual(), pos, this.tabuleiro);*/
 		try {
 			Jogada jogada = new Jogada(peca.getPosicaoAtual(), pos);
 			this.jogo.executarJogada(jogada);
@@ -160,19 +204,64 @@ public class VisaoTabuleiro {
 		}
 	};
 	
-	public void jogadaIA() {
+	public void jogadaIA(Jogador jogador) {
 		gridPane.setDisable(true);
 		
 		PauseTransition pausa = new PauseTransition(Duration.seconds(1.5));
 		
 		pausa.setOnFinished(event -> {
-			Jogada jogada = this.jogo.JogadaDaIA();
+			Jogada jogada = this.jogo.JogadaDaIA(jogador);
 			this.jogo.executarJogada(jogada);
-			this.checarEstadoJogo();
 			gridPane.setDisable(false);
+			this.checarEstadoJogo();
 		});
 		
 		pausa.play();
+	}
+	
+	public void checarEstadoJogo() {
+		Posicao posUltPeca = this.historico.getUltimoTurno().jogada().destino();
+		Peca ultimaPeca = this.tabuleiro.getPeca(posUltPeca);
+
+		if(this.validador.checarPromocao(ultimaPeca)) {
+			if(ultimaPeca.getJogadorResp() instanceof JogadorHumano) this.exibirPromocaoPeao(ultimaPeca);
+			else this.jogo.promoverPeao(ultimaPeca, this.tabuleiro, "Rainha");
+		}
+		
+		gridPane.getChildren().clear();
+		this.gerarTabuleiro();
+		this.jogo.setTurno();
+		
+		int jogadorAtual = this.jogo.getJogadorAtual() == 0 ? 1 : 0;
+		this.jogo.setJogadorAtual(jogadorAtual);
+		
+		this.jogo.encerrarJogo(this.jogo.getJogador());
+		Status statusAtual = this.jogo.getStatus();
+		
+		if(statusAtual != Status.EM_ANDAMENTO) {
+			String mensagem;
+			if(statusAtual == Status.XEQUE_MATE) mensagem = String.format("Jogador %d sofreu xeque-mate!", this.jogo.getJogadorAtual() + 1);
+			else if(statusAtual == Status.AFOGAMENTO) mensagem = "Jogo encerrado por afogamento (stalemate)!";
+			else mensagem = "Jogo encerrado por empate!";
+			gridPane.setDisable(true);
+			this.exibirMensagemFimDeJogo(mensagem);
+		} else if (this.jogo.getJogador() instanceof JogadorIA) {
+			this.jogadaIA(this.jogo.getJogador());
+		}
+	}
+	
+	public void inicializarTabuleiro() {
+		this.gerarTabuleiro();
+		if (this.jogo.getJogador() instanceof JogadorIA) {
+			this.jogadaIA(this.jogo.getJogador());
+		}
+	}
+	
+	public void reiniciarTabuleiro() {
+		gridPane.setDisable(false);
+		this.jogo.reiniciarJogo();
+		gridPane.getChildren().clear();
+		this.gerarTabuleiro();
 	}
 	
 	private void exibirAlerta(String msg) {
@@ -201,41 +290,6 @@ public class VisaoTabuleiro {
 				this.reiniciarTabuleiro();
 			}
 			else if (resultado.get() == sair) System.exit(0);
-		}
-	}
-	
-	public void reiniciarTabuleiro() {
-		gridPane.setDisable(false);
-		this.jogo.reiniciarJogo();
-		gridPane.getChildren().clear();
-		this.gerarTabuleiro();
-	}
-	
-	public void checarEstadoJogo() {
-		Posicao posUltPeca = this.historico.getUltimoTurno().jogada().destino();
-		Peca ultimaPeca = this.tabuleiro.getPeca(posUltPeca);
-
-		if(this.validador.checarPromocao(ultimaPeca)) {
-			if(ultimaPeca.getJogadorResp() instanceof JogadorHumano) this.exibirPromocaoPeao(ultimaPeca);
-			else this.jogo.promoverPeao(ultimaPeca, this.tabuleiro, "Rainha");
-		}
-		
-		gridPane.getChildren().clear();
-		this.gerarTabuleiro();
-		
-		int jogadorAtual = this.jogo.getJogadorAtual() == 0 ? 1 : 0;
-		this.jogo.setJogadorAtual(jogadorAtual);
-		Status statusAtual = this.jogo.getStatus();
-		
-		if(statusAtual != Status.EM_ANDAMENTO) {
-			String mensagem;
-			if(statusAtual == Status.XEQUE_MATE) mensagem = String.format("Jogador %d sofreu xeque-mate!", this.jogo.getJogadorAtual() + 1);
-			else if(statusAtual == Status.AFOGAMENTO) mensagem = "Jogo encerrado por afogamento (stalemate)!";
-			else mensagem = "Jogo encerrado por empate!";
-			gridPane.setDisable(true);
-			this.exibirMensagemFimDeJogo(mensagem);
-		} else if (this.jogo.getJogador() instanceof JogadorIA) {
-			this.jogadaIA();
 		}
 	}
 	
